@@ -8,8 +8,14 @@ const axiosInstance = axios.create({
 
 const authToken = window.localStorage.getItem("authToken");
 if (authToken) {
-  const decodedToken = new TextDecoder("utf-8").decode(Uint8Array.from(atob(authToken), c => c.charCodeAt(0)));
-  axiosInstance.defaults.headers['Authorization'] = `token ${decodedToken}`
+  try {
+    const decodedToken = new TextDecoder("utf-8").decode(Uint8Array.from(atob(authToken), c => c.charCodeAt(0)));
+    axiosInstance.defaults.headers['Authorization'] = `token ${decodedToken}`
+  } catch (error) {
+    // If token is not valid base64, use it as-is or clear invalid token
+    console.warn("Invalid auth token format, clearing from storage:", error);
+    window.localStorage.removeItem("authToken");
+  }
 }
 
 axiosInstance.interceptors.response.use(

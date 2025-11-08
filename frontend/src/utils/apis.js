@@ -7,8 +7,14 @@ import { JWT_HOST_API } from 'configs/auth.config';
 export const getAuthorizationToken = async () => {
   const token = window.localStorage.getItem("authToken");
   if (token) {
-    const decodedToken = new TextDecoder("utf-8").decode(Uint8Array.from(atob(token), c => c.charCodeAt(0)));
-    axiosInstance.defaults.headers['Authorization'] = `token ${decodedToken}`
+    try {
+      const decodedToken = new TextDecoder("utf-8").decode(Uint8Array.from(atob(token), c => c.charCodeAt(0)));
+      axiosInstance.defaults.headers['Authorization'] = `token ${decodedToken}`
+    } catch (error) {
+      // If token is not valid base64, clear invalid token
+      console.warn("Invalid auth token format, clearing from storage:", error);
+      window.localStorage.removeItem("authToken");
+    }
   }
 }
 
@@ -130,16 +136,23 @@ export const getCustomData = async (params) => {
 export const uploadFile = async (file) => {
   const token = window.localStorage.getItem("authToken");
   if (token) {
-    const decodedToken = new TextDecoder("utf-8").decode(Uint8Array.from(atob(token), c => c.charCodeAt(0)));
-    axios.defaults.headers['Authorization'] = `token ${decodedToken}`
-    const formData = new FormData();
-    formData.append("file", file);
-    const response = await axios.post(`${JWT_HOST_API}/api/method/upload_file`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        "Authorization": `token ${decodedToken}`
-      },
-    });
-    return response?.data?.message
+    try {
+      const decodedToken = new TextDecoder("utf-8").decode(Uint8Array.from(atob(token), c => c.charCodeAt(0)));
+      axios.defaults.headers['Authorization'] = `token ${decodedToken}`
+      const formData = new FormData();
+      formData.append("file", file);
+      const response = await axios.post(`${JWT_HOST_API}/api/method/upload_file`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "Authorization": `token ${decodedToken}`
+        },
+      });
+      return response?.data?.message
+    } catch (error) {
+      // If token is not valid base64, clear invalid token
+      console.warn("Invalid auth token format, clearing from storage:", error);
+      window.localStorage.removeItem("authToken");
+      throw error;
+    }
   }
 };
