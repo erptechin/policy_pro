@@ -114,7 +114,7 @@ def sign_up():
 @frappe.whitelist()
 def profile():
     user = frappe.get_doc("User", frappe.session.user)
-    settings = frappe.get_cached_doc('RMC Settings')
+    # settings = frappe.get_cached_doc('RMC Settings')
     
     # Get employee details if exists
     employee = None
@@ -132,7 +132,7 @@ def profile():
         "full_name": user.full_name or "",
         "email": user.email or "",
         "user_image": user.user_image,
-        "settings": settings,
+        # "settings": settings,
         "employeeId":employee.name if employee else None
     }
     return
