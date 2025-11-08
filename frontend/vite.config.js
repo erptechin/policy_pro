@@ -11,7 +11,7 @@ export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
 
   // Set base path dynamically
-  const base = command === 'serve' ? '/' : '/assets/my_rmc/dist/';
+  const base = command === 'serve' ? '/' : '/assets/policy_pro/dist/';
 
   return {
     base,
@@ -21,8 +21,8 @@ export default defineConfig(({ command, mode }) => {
       registerType: 'prompt',
       includeAssets: ['favicon.svg', 'robots.txt', 'icons/*'],
       manifest: {
-        name: 'RMC APP',
-        short_name: 'RMC',
+        name: 'Policy Pro',
+        short_name: 'Policy Pro',
         start_url: '/rmc',
         display: 'standalone',
         background_color: '#ffffff',

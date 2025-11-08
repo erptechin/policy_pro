@@ -184,7 +184,7 @@ export default function AddEditFrom() {
   const onSubmit = async (formData) => {
     if (id) {
       const response = await getCustomData({
-        url: `my_rmc.api.doctype.update_data?doctype=${doctype}&name=${id}&update_fields=${JSON.stringify([{ 'docstatus': 0 }])}`
+        url: `policy_pro.api.doctype.update_data?doctype=${doctype}&name=${id}&update_fields=${JSON.stringify([{ 'docstatus': 0 }])}`
       });
       if (response.success) {
         delete formData.creation

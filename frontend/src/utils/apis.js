@@ -38,34 +38,34 @@ export const showError = (error) => {
 };
 
 export const signUp = async (body) => {
-  const response = await axiosInstance.post(`method/my_rmc.api.auth.sign_up`, body);
+  const response = await axiosInstance.post(`method/policy_pro.api.auth.sign_up`, body);
   return response.data;
 };
 
 export const forgotPassword = async (body) => {
-  const response = await axiosInstance.post(`method/my_rmc.api.auth.forgot_password`, body);
+  const response = await axiosInstance.post(`method/policy_pro.api.auth.forgot_password`, body);
   return response.data;
 };
 
 export const resetPassword = async (body) => {
-  const response = await axiosInstance.post(`method/my_rmc.api.auth.reset_password`, body);
+  const response = await axiosInstance.post(`method/policy_pro.api.auth.reset_password`, body);
   return response.data;
 };
 
 export const loginApi = async (params) => {
-  const response = await axiosInstance.get(`method/my_rmc.api.auth.login`, { params });
+  const response = await axiosInstance.get(`method/policy_pro.api.auth.login`, { params });
   return response.data;
 };
 
 export const fetchProfile = async () => {
   await getAuthorizationToken()
-  const response = await axiosInstance.get(`method/my_rmc.api.auth.profile`);
+  const response = await axiosInstance.get(`method/policy_pro.api.auth.profile`);
   return response.data;
 };
 
 export const updProfile = async (body) => {
   await getAuthorizationToken()
-  const response = await axiosInstance.post(`method/my_rmc.api.auth.update_profile`, body);
+  const response = await axiosInstance.post(`method/policy_pro.api.auth.update_profile`, body);
   return response.data;
 };
 
@@ -76,25 +76,25 @@ export const logOut = async () => {
 
 export const changePassword = async (body) => {
   await getAuthorizationToken()
-  const response = await axiosInstance.post(`method/my_rmc.api.auth.change_password`, body);
+  const response = await axiosInstance.post(`method/policy_pro.api.auth.change_password`, body);
   return response.data;
 };
 
 export const getInfo = async (params) => {
   await getAuthorizationToken()
-  const response = await axiosInstance.get(`method/my_rmc.api.doctype.list_info`, { params });
+  const response = await axiosInstance.get(`method/policy_pro.api.doctype.list_info`, { params });
   return response?.data?.data
 };
 
 export const getListData = async (params) => {
   await getAuthorizationToken()
-  const response = await axiosInstance.get(`method/my_rmc.api.doctype.list_data`, { params });
+  const response = await axiosInstance.get(`method/policy_pro.api.doctype.list_data`, { params });
   return response?.data?.data
 };
 
 export const getSingleData = async (params) => {
   await getAuthorizationToken()
-  const response = await axiosInstance.get(`method/my_rmc.api.doctype.single_data`, { params })
+  const response = await axiosInstance.get(`method/policy_pro.api.doctype.single_data`, { params })
   return response?.data?.data?.data ?? {};
 };
 
@@ -112,7 +112,7 @@ export const updateData = async (params) => {
 
 export const deleteData = async (body) => {
   await getAuthorizationToken()
-  const response = await axiosInstance.post(`method/my_rmc.api.doctype.delete_data`, body);
+  const response = await axiosInstance.post(`method/policy_pro.api.doctype.delete_data`, body);
   return response.data;
 };
 

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build && yarn copy-html-entry",
-    "copy-html-entry": "cp -r dist ../my_rmc/public && cp -r ../my_rmc/public/dist/index.html ../my_rmc/www/index.html && rm -r ../my_rmc/public/dist/index.html",
+    "copy-html-entry": "cp -r dist ../policy_pro/public && cp -r ../policy_pro/public/dist/index.html ../policy_pro/www/index.html && rm -r ../policy_pro/public/dist/index.html",
     "lint": "eslint .",
     "preview": "vite preview"
   },

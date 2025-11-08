@@ -1,4 +1,4 @@
-export const APP_NAME = "RMC APP";
+export const APP_NAME = "Policy Pro";
 export const APP_KEY = "rmc-app";
 
 // Redirect Paths
