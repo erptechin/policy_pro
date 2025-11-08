@@ -1,4 +1,4 @@
-import StatisticIcon from 'assets/nav-icons/statistic.svg?react'
+import ShoppingCartIcon from 'assets/nav-icons/shopping-cart.svg?react'
 import { NAV_TYPE_ITEM } from 'constants/app.constant'
 
 export const salesOrder = {
@@ -7,6 +7,6 @@ export const salesOrder = {
     path: '/sales/sales-order',
     title: 'Sales Order',
     transKey: 'nav.sales.sales-order',
-    Icon: StatisticIcon,
+    Icon: ShoppingCartIcon,
 }
 

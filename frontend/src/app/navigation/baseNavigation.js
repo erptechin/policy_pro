@@ -1,7 +1,9 @@
 import { NAV_TYPE_ITEM, } from "constants/app.constant";
 import DashboardsIcon from 'assets/dualicons/dashboards.svg?react'
-import StatisticIcon from 'assets/nav-icons/statistic.svg?react'
+import PeoplePlusIcon from 'assets/nav-icons/people-plus.svg?react'
 import PeopleIcon from 'assets/nav-icons/people.svg?react'
+import ShoppingCartIcon from 'assets/nav-icons/shopping-cart.svg?react'
+import UserIcon from 'assets/nav-icons/user.svg?react'
 
 export const baseNavigation = [
     {
@@ -18,7 +20,7 @@ export const baseNavigation = [
         path: '/dashboards/lead/add-new',
         title: 'Add Lead',
         transKey: 'nav.lead.lead',
-        Icon: StatisticIcon,
+        Icon: PeoplePlusIcon,
     },
     {
         id: 'customer',
@@ -26,7 +28,7 @@ export const baseNavigation = [
         path: '/sales/customer',
         title: 'Customer',
         transKey: 'nav.sales.customer',
-        Icon: StatisticIcon,
+        Icon: PeopleIcon,
     },
     {
         id: 'sales-order',
@@ -34,7 +36,7 @@ export const baseNavigation = [
         path: '/sales/sales-order',
         title: 'Sales Order',
         transKey: 'nav.sales.sales-order',
-        Icon: StatisticIcon,
+        Icon: ShoppingCartIcon,
     },
     {
         id: 'users',
@@ -42,6 +44,6 @@ export const baseNavigation = [
         path: '/dashboards/users',
         title: 'Users',
         transKey: 'nav.users.users',
-        Icon: PeopleIcon,
+        Icon: UserIcon,
     }
 ]

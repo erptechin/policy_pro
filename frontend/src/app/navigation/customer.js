@@ -1,4 +1,4 @@
-import StatisticIcon from 'assets/nav-icons/statistic.svg?react'
+import PeopleIcon from 'assets/nav-icons/people.svg?react'
 import { NAV_TYPE_ITEM } from 'constants/app.constant'
 
 export const customer = {
@@ -7,6 +7,6 @@ export const customer = {
     path: '/sales/customer',
     title: 'Customer',
     transKey: 'nav.sales.customer',
-    Icon: StatisticIcon,
+    Icon: PeopleIcon,
 }
 

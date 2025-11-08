@@ -1,4 +1,4 @@
-import PeopleIcon from 'assets/nav-icons/people.svg?react'
+import UserIcon from 'assets/nav-icons/user.svg?react'
 import { NAV_TYPE_ITEM } from 'constants/app.constant'
 
 export const users = {
@@ -7,6 +7,6 @@ export const users = {
     path: '/dashboards/users',
     title: 'Users',
     transKey: 'nav.users.users',
-    Icon: PeopleIcon,
+    Icon: UserIcon,
 }
 
