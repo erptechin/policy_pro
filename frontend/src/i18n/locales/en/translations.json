@@ -7,6 +7,18 @@
       "opportunity": "Opportunity",
       "crm": "CRM"
     },
+    "lead": {
+      "lead": "Leads"
+    },
+    "customer": {
+      "customer": "Customers"
+    },
+    "sales-order": {
+      "sales-order": "Sales Orders"
+    },
+    "users": {
+      "users": "Users"
+    },
     "stores": {
       "stores": "Stores",
       "item": "Item",

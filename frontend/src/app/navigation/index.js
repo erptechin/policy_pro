@@ -9,7 +9,7 @@ export const navigation = [
     lead,
     customer,
     salesOrder,
-    users,
+    // users,
 ]
 
 export { baseNavigation } from './baseNavigation'
