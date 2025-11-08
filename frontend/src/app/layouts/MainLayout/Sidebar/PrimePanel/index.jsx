@@ -19,6 +19,10 @@ export function PrimePanel({
   const { cardSkin } = useThemeContext();
   const { t } = useTranslation();
 
+  if (!currentSegment?.childs || currentSegment.childs.length === 0) {
+    return null;
+  }
+
   const title = t(currentSegment?.transKey) || currentSegment?.title;
 
   return (
@@ -50,12 +54,10 @@ export function PrimePanel({
             <ChevronLeftIcon className="size-6 rtl:rotate-180" />
           </Button>
         </div>
-        {currentSegment?.childs && (
-          <Menu
-            nav={currentSegment?.childs}
-            pathname={pathname}
-          />
-        )}
+        <Menu
+          nav={currentSegment.childs}
+          pathname={pathname}
+        />
       </div>
     </div>
   );

@@ -18,6 +18,14 @@ export function Group({ data }) {
   const { t } = useTranslation();
   const { cardSkin } = useThemeContext();
 
+  // If no childs, render as a single menu item instead of a group
+  if (!data.childs || data.childs.length === 0) {
+    if (data.type === NAV_TYPE_ITEM) {
+      return <MenuItem data={data} />;
+    }
+    return null;
+  }
+
   return (
     <div className="pt-3">
       <div

@@ -53,11 +53,13 @@ export function Sidebar() {
         activeSegment={activeSegmentPath}
         setActiveSegment={setActiveSegmentPath}
       />
-      <PrimePanel
-        close={close}
-        currentSegment={currentSegment}
-        pathname={pathname}
-      />
+      {currentSegment?.childs && currentSegment.childs.length > 0 && (
+        <PrimePanel
+          close={close}
+          currentSegment={currentSegment}
+          pathname={pathname}
+        />
+      )}
     </>
   );
 }

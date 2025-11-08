@@ -60,6 +60,46 @@ const protectedRoutes = {
                   .default,
               }),
             },
+            {
+              path: "lead",
+              lazy: async () => ({
+                Component: (await import("app/pages/dashboards/lead")).default,
+              }),
+            },
+            {
+              path: "lead/add-new",
+              lazy: async () => ({
+                Component: (await import("app/pages/dashboards/lead/form"))
+                  .default,
+              }),
+            },
+            {
+              path: "lead/edit/:id",
+              lazy: async () => ({
+                Component: (await import("app/pages/dashboards/lead/form"))
+                  .default,
+              }),
+            },
+            {
+              path: "users",
+              lazy: async () => ({
+                Component: (await import("app/pages/dashboards/users")).default,
+              }),
+            },
+            {
+              path: "users/add-new",
+              lazy: async () => ({
+                Component: (await import("app/pages/dashboards/users/form"))
+                  .default,
+              }),
+            },
+            {
+              path: "users/edit/:id",
+              lazy: async () => ({
+                Component: (await import("app/pages/dashboards/users/form"))
+                  .default,
+              }),
+            },
           ],
         },
         {
