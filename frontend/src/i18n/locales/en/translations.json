@@ -1,24 +1,2 @@
-{
-  "nav": {
-    "dashboards": {
-      "dashboards": "Dashboard",
-      "home": "Home"
-    },
-    "lead": {
-      "lead": "Leads"
-    },
-    "sales": {
-      "customer": "Customer",
-      "sales-order": "Sales Order"
-    },
-    "users": {
-      "users": "Users"
-    },
-    "settings": {
-      "settings": "Settings",
-      "general": "General",
-      "appearance": "Appearance",
-      "sessions": "Sessions & Password"
-    }
-  }
-}
+{}
+

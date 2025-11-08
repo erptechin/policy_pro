@@ -1,24 +1,2 @@
-{
-  "nav": {
-    "dashboards": {
-      "dashboards": "لوحة التحكم",
-      "home": "الرئيسية"
-    },
-    "lead": {
-      "lead": "إضافة عميل محتمل"
-    },
-    "sales": {
-      "customer": "العميل",
-      "sales-order": "أمر البيع"
-    },
-    "users": {
-      "users": "المستخدمون"
-    },
-    "settings": {
-      "settings": "الإعدادات",
-      "general": "عام",
-      "appearance": "المظهر",
-      "sessions": "الجلسات وكلمة المرور"
-    }
-  }
-}
+{}
+

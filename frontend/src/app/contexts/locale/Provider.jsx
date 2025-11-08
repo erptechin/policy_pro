@@ -59,7 +59,7 @@ export function LocaleProvider({ children }) {
   }, [locale]);
 
   useIsomorphicEffect(() => {
-    document.documentElement.dir = direction;
+    
   }, [direction]);
 
   return (
@@ -80,3 +80,4 @@ export function LocaleProvider({ children }) {
 LocaleProvider.propTypes = {
   children: PropTypes.node.isRequired,
 };
+
