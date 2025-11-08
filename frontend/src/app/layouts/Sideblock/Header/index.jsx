@@ -76,9 +76,9 @@ export function Header() {
             )}
           />
         </div>
-        <Notifications />
-        <RightSidebar />
-        <LanguageSelector />
+        {/* <Notifications /> */}
+        {/* <RightSidebar /> */}
+        {/* <LanguageSelector /> */}
         <Profile />
       </div>
     </header>

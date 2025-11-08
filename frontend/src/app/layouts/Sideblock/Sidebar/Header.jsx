@@ -17,7 +17,7 @@ export function Header() {
         <Link to="/">
           <img src={"/assets/policy_pro/images/fav.png"} alt="" className="size-10 text-primary-600 dark:text-primary-400" />
         </Link>
-        <LogoType className="h-5 w-auto text-gray-800 dark:text-dark-50" />
+        <h3 className="h-5 w-auto text-gray-800 dark:text-dark-50 text-2xl font-bold -mt-3">Policy Pro</h3>
       </div>
       <div className="pt-5 xl:hidden">
         <Button

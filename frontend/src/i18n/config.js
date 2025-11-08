@@ -30,4 +30,3 @@ i18n
   }).languages = ["en", "es", "ar", "zh-cn"];
 
 export default i18n
-
