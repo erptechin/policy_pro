@@ -1,8 +1,8 @@
 app_name = "policy_pro"
 app_title = "Policy Pro"
-app_publisher = "Your Name"
+app_publisher = "erptech"
 app_description = "Policy Pro App"
-app_email = "your@email.com"
+app_email = "erptechin@gmail.com"
 app_license = "mit"
 
 # Apps
@@ -98,6 +98,7 @@ app_license = "mit"
 
 # before_app_install = "policy_pro.utils.before_app_install"
 # after_app_install = "policy_pro.utils.after_app_install"
+after_app_install = "policy_pro.utils.after_app_install.after_app_install"
 
 # Integration Cleanup
 # -------------------
