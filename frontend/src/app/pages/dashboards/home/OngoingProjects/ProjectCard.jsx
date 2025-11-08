@@ -3,69 +3,68 @@ import clsx from "clsx";
 import PropTypes from "prop-types";
 
 // Local Imports
-import { Avatar, Card, Progress } from "components/ui";
+import { Avatar, Card } from "components/ui";
 
 // ----------------------------------------------------------------------
 
 export function ProjectCard({
-  name,
-  image,
-  posting_date,
-  deadline,
-  isActive,
-  progress,
-  color,
-  customer
+  id,
+  lead_name,
+  company_name,
+  status,
+  source,
+  email,
+  phone,
+  color = "primary"
 }) {
+  const displayName = lead_name || company_name || id;
+  
   return (
     <Card className="p-3">
       <div className="flex items-center gap-3">
         <Avatar
           size={10}
-          name={customer}
-          src={customer}
+          name={displayName}
           initialColor="auto"
         />
         <div className="min-w-0 flex-1">
           <div className="flex justify-between">
             <p className="truncate font-medium text-gray-800 dark:text-dark-100">
-              {customer}
+              {displayName}
             </p>
           </div>
           <div className="mt-0.5 flex text-xs text-gray-400 dark:text-dark-300">
-            <p>{posting_date}</p>
-            <div className="mx-2 my-1 hidden w-px bg-gray-200 dark:bg-dark-500 sm:flex"></div>
-            {/* <p className="hidden sm:flex">Deadline: {deadline}</p> */}
+            {company_name && <p>{company_name}</p>}
+            {status && (
+              <>
+                {company_name && <div className="mx-2 my-1 hidden w-px bg-gray-200 dark:bg-dark-500 sm:flex"></div>}
+                <p className="hidden sm:flex">{status}</p>
+              </>
+            )}
           </div>
         </div>
       </div>
-      <p
-        className={clsx(
-          `this:${color}`,
-          "-mt-3 text-end text-xs font-medium text-this dark:text-this-lighter",
-        )}
-      >
-        {20}%
-      </p>
-
-      <Progress
-        value={20}
-        color={color}
-        isActive={isActive}
-        classNames={{
-          root: "mt-2 h-1.5",
-        }}
-      />
+      {source && (
+        <p
+          className={clsx(
+            `this:${color}`,
+            "-mt-3 text-end text-xs font-medium text-this dark:text-this-lighter",
+          )}
+        >
+          {source}
+        </p>
+      )}
     </Card>
   );
 }
 
 ProjectCard.propTypes = {
-  name: PropTypes.string,
-  image: PropTypes.string,
-  updated_at: PropTypes.string,
-  deadline: PropTypes.string,
-  isActive: PropTypes.bool,
-  progress: PropTypes.number,
+  id: PropTypes.string,
+  lead_name: PropTypes.string,
+  company_name: PropTypes.string,
+  status: PropTypes.string,
+  source: PropTypes.string,
+  email: PropTypes.string,
+  phone: PropTypes.string,
   color: PropTypes.string,
 };

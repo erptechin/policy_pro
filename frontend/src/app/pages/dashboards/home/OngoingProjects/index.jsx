@@ -6,8 +6,8 @@ import { useInfo, useFeachData } from "hooks/useApiHook";
 
 // ----------------------------------------------------------------------
 
-const doctype = "Delivery Note"
-const fields = ['posting_date', 'customer', 'custom_site', 'custom_vehicle', 'driver']
+const doctype = "Lead"
+const fields = ['lead_name', 'status', 'source', 'email', 'phone', 'company_name']
 
 export function OngoingProjects() {
   const navigate = useNavigate();
@@ -33,18 +33,18 @@ export function OngoingProjects() {
     <div>
       <div className="flex min-w-0 items-center justify-between">
         <h2 className="truncate text-sm-plus font-medium tracking-wide text-gray-800 dark:text-dark-100">
-          Ongoing Projects
+          Ongoing Leads
         </h2>
         <a
-          onClick={() => navigate('/sales/delivery-challan')}
+          onClick={() => navigate('/dashboards/lead')}
           className="border-b border-dotted border-current pb-0.5 text-xs-plus font-medium text-primary-600 outline-hidden transition-colors duration-300 hover:text-primary-600/70 focus:text-primary-600/70 dark:text-primary-400 dark:hover:text-primary-400/70 dark:focus:text-primary-400/70"
         >
           View All
         </a>
       </div>
       <div className="mt-3 space-y-3.5">
-        {lists.map((project) => (
-          <ProjectCard key={project.id} {...project} />
+        {lists.map((lead) => (
+          <ProjectCard key={lead.id} {...lead} />
         ))}
       </div>
     </div>

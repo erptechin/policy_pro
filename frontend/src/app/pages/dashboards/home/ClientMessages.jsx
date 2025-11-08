@@ -9,82 +9,83 @@ import {
 import { EllipsisHorizontalIcon } from "@heroicons/react/20/solid";
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
-import { Fragment } from "react";
+import { Fragment, useState, useEffect } from "react";
+import { useNavigate } from "react-router";
 
 // Local Imports
 import { Avatar, Button, Card } from "components/ui";
+import { useInfo, useFeachData } from "hooks/useApiHook";
 
 // ----------------------------------------------------------------------
 
-const messages = [
-  {
-    uid: "1",
-    name: "Konnor Guzman",
-    avatar: "/images/200x200.png",
-    messageCount: 3,
-    lastMessage: "Hello, how are you?",
-  },
-  {
-    uid: "2",
-    name: "Travis Fuller",
-    avatar: "/images/200x200.png",
-    messageCount: 1,
-    lastMessage: "I want to know about the project status",
-  },
-  {
-    uid: "3",
-    name: "Alfredo Elliott",
-    avatar: null,
-    messageCount: 2,
-    lastMessage: "am i supposed to use conditioner everyday",
-  },
-  {
-    uid: "4",
-    name: "Derrick Simmons",
-    avatar: "/images/200x200.png",
-    messageCount: 3,
-    lastMessage: "Ad hic minus repudiandae.",
-  },
-];
+const doctype = "Sales Order";
+const fields = ['customer', 'status', 'total', 'delivery_date', 'po_no'];
 
 export function ClientMessages() {
+  const navigate = useNavigate();
+  const [orders, setOrders] = useState([]);
+
+  const { data: info } = useInfo({ doctype, fields: JSON.stringify(fields) });
+  const [search, setSearch] = useState({ doctype, page: 1, page_length: 5, fields: null });
+  const { data } = useFeachData(search);
+
+  useEffect(() => {
+    if (info?.fields) {
+      const fieldnames = info?.fields.map(field => field.fieldname);
+      setSearch(prev => ({ ...prev, fields: JSON.stringify([...fieldnames, "name"]) }));
+    }
+  }, [info]);
+
+  useEffect(() => {
+    if (data?.data) {
+      setOrders(data?.data);
+    }
+  }, [data]);
+
   return (
     <Card className="px-4 pb-4 sm:px-5">
       <div className="flex h-14 min-w-0 items-center justify-between py-3">
         <h2 className="font-medium tracking-wide text-gray-800 dark:text-dark-100">
-          Client Messages
+          Sales Orders
         </h2>
         <ActionMenu />
       </div>
       <div className="space-y-4">
-        {messages.map((message) => (
+        {orders.map((order) => (
           <div
-            key={message.uid}
+            key={order.id}
             className="flex items-center justify-between gap-2"
+            onClick={() => navigate(`/sales/sales-order/${order.id}`)}
+            style={{ cursor: 'pointer' }}
           >
             <div className="flex min-w-0 items-center gap-3">
               <Avatar
                 size={10}
-                name={message.name}
-                src={message.avatar}
+                name={order.customer || order.id}
                 initialColor="auto"
               />
               <div className="min-w-0">
                 <div className="flex items-center space-x-2 ">
                   <p className="font-medium text-gray-800 dark:text-dark-100">
-                    {message.name}
+                    {order.customer || order.id}
                   </p>
-                  <div className="flex h-4.5 min-w-[1.125rem] items-center justify-center rounded-full bg-gray-200 px-1.5 text-tiny-plus font-medium leading-none text-gray-800 dark:bg-dark-450 dark:text-white">
-                    {message.messageCount}
-                  </div>
+                  {order.status && (
+                    <div className="flex h-4.5 min-w-[1.125rem] items-center justify-center rounded-full bg-gray-200 px-1.5 text-tiny-plus font-medium leading-none text-gray-800 dark:bg-dark-450 dark:text-white">
+                      {order.status}
+                    </div>
+                  )}
                 </div>
                 <p className="mt-0.5 truncate text-xs text-gray-400 dark:text-dark-300">
-                  {message.lastMessage}
+                  {order.total ? `Total: ${order.total}` : order.po_no || order.id}
                 </p>
               </div>
             </div>
             <a
               href="##"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate(`/sales/sales-order/${order.id}`);
+              }}
               className="hover:text-primary-600 focus:text-primary-600 dark:hover:text-primary-400 dark:focus:text-primary-400"
             >
               <ChevronRightIcon className="size-5 ltr:-mr-1 rtl:-ml-1 rtl:rotate-180" />
@@ -97,6 +98,8 @@ export function ClientMessages() {
 }
 
 function ActionMenu() {
+  const navigate = useNavigate();
+  
   return (
     <Menu
       as="div"
@@ -123,55 +126,14 @@ function ActionMenu() {
           <MenuItem>
             {({ focus }) => (
               <button
+                onClick={() => navigate('/sales/sales-order')}
                 className={clsx(
                   "flex h-9 w-full items-center px-3 tracking-wide outline-hidden transition-colors",
                   focus &&
                     "bg-gray-100 text-gray-800 dark:bg-dark-600 dark:text-dark-100",
                 )}
               >
-                <span>Action</span>
-              </button>
-            )}
-          </MenuItem>
-          <MenuItem>
-            {({ focus }) => (
-              <button
-                className={clsx(
-                  "flex h-9 w-full items-center px-3 tracking-wide outline-hidden transition-colors",
-                  focus &&
-                    "bg-gray-100 text-gray-800 dark:bg-dark-600 dark:text-dark-100",
-                )}
-              >
-                <span>Another action</span>
-              </button>
-            )}
-          </MenuItem>
-          <MenuItem>
-            {({ focus }) => (
-              <button
-                className={clsx(
-                  "flex h-9 w-full items-center px-3 tracking-wide outline-hidden transition-colors",
-                  focus &&
-                    "bg-gray-100 text-gray-800 dark:bg-dark-600 dark:text-dark-100",
-                )}
-              >
-                <span>Other action</span>
-              </button>
-            )}
-          </MenuItem>
-
-          <hr className="mx-3 my-1.5 h-px border-gray-150 dark:border-dark-500" />
-
-          <MenuItem>
-            {({ focus }) => (
-              <button
-                className={clsx(
-                  "flex h-9 w-full items-center px-3 tracking-wide outline-hidden transition-colors",
-                  focus &&
-                    "bg-gray-100 text-gray-800 dark:bg-dark-600 dark:text-dark-100",
-                )}
-              >
-                <span>Separated action</span>
+                <span>View All</span>
               </button>
             )}
           </MenuItem>
