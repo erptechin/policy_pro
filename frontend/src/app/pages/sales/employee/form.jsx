@@ -16,7 +16,8 @@ import { useInfo, useAddData, useFeachSingle, useUpdateData } from "hooks/useApi
 
 const pageName = "Employee"
 const doctype = "Employee"
-const fields = ['employee_name', 'designation', 'department', 'status']
+const fields = ['employee_name', 'designation', 'department', 'custom_employee_image']
+const subFields = ['user_id', 'status']
 
 const tableFields = {
   "ignorFields": {}
@@ -32,8 +33,8 @@ export default function AddEditFrom() {
   const { isDark, darkColorScheme, lightColorScheme } = useThemeContext();
   const navigate = useNavigate();
   const { id } = useParams();
-  const { data: info, isFetching: isFetchingInfo } = useInfo({ doctype, fields: JSON.stringify(fields) });
-  const { data, isFetching: isFetchingData } = useFeachSingle({ doctype, id, fields: JSON.stringify(fields) });
+  const { data: info, isFetching: isFetchingInfo } = useInfo({ doctype, fields: JSON.stringify([...fields, ...subFields]) });
+  const { data, isFetching: isFetchingData } = useFeachSingle({ doctype, id, fields: JSON.stringify([...fields, ...subFields]) });
 
   const mutationAdd = useAddData((data) => {
     if (data) {
@@ -123,6 +124,18 @@ export default function AddEditFrom() {
                     errors={errors}
                   />
                 </div>
+              </Card>
+            </div>
+            <div className="col-span-12 space-y-4 sm:space-y-5 lg:col-span-4 lg:space-y-6">
+              <Card className="p-4 sm:px-5">
+                <DynamicForms
+                  infos={info}
+                  tables={tableFields}
+                  fields={subFields}
+                  register={register}
+                  control={control}
+                  errors={errors}
+                />
               </Card>
             </div>
           </div>

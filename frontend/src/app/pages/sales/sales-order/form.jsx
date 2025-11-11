@@ -19,8 +19,8 @@ import { useAuthContext } from "app/contexts/auth/context";
 
 const pageName = "Sales Order List"
 const doctype = "Sales Order"
-const fields_list = ['customer', 'delivery_date', 'po_no', 'po_date', 'items']
-const subFields = ['custom_site']
+const fields_list = ['customer', 'items']
+const subFields = ['delivery_date']
 
 const tableFields = {
   "items": { "item_code": true, "qty": true, "conversion_factor": true },
@@ -195,33 +195,15 @@ export default function AddEditFrom() {
               </Card>
             </div>
             <div className="col-span-12 space-y-4 sm:space-y-5 lg:col-span-4 lg:space-y-6">
-              <Card className="space-y-5 p-4 sm:px-5">
-                <DynamicForms
-                  infos={info}
-                  fields={[...branch]}
-                  register={register}
-                  control={control}
-                  errors={errors}
-                  readOnly={info?.is_submittable && data?.docstatus}
-                />
-                <Controller
-                  render={({ field: { onChange, value, ...rest } }) => {
-                    return <SearchSelect
-                      onChange={onChange}
-                      value={value}
-                      label={'Site'}
-                      lists={sites}
-                      placeholder={`Select Site`}
-                      error={errors['custom_site']?.message}
-                      readOnly={info?.is_submittable && data?.docstatus}
-                      {...rest}
-                    />
-                  }}
-                  control={control}
-                  name={'custom_site'}
-                  {...register('custom_site')}
-                />
-              </Card>
+              <DynamicForms
+                infos={info}
+                fields={subFields}
+                tables={tableFields}
+                register={register}
+                control={control}
+                errors={errors}
+                readOnly={info?.is_submittable && data?.docstatus}
+              />
             </div>
           </div>
         </form>

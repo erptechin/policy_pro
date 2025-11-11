@@ -4,7 +4,7 @@ import { useInfo, useFeachData } from "hooks/useApiHook";
 
 const pageName = "Customer List";
 const doctype = "Customer";
-const fields = ['customer_type', 'gstin', 'pan', 'customer_primary_address'];
+const fields = ['custom_customer_image', 'customer_type', 'customer_primary_address'];
 
 export default function ListData() {
   const [orders, setOrders] = useState([]);

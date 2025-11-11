@@ -4,7 +4,7 @@ import { useInfo, useFeachData } from "hooks/useApiHook";
 
 const pageName = "Employee List";
 const doctype = "Employee";
-const fields = ['employee_name', 'designation', 'department', 'status'];
+const fields = ['custom_employee_image', 'employee_name', 'designation', 'department', 'status'];
 
 export default function ListData() {
   const [orders, setOrders] = useState([]);

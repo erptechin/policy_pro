@@ -48,6 +48,11 @@ export default function RenderField({ item, control, register, errors, tables })
                             <Controller
                                 render={({ field: { value, onChange } }) => {
                                     return <div>
+                                        {item.label && (
+                                            <label className={clsx("block text-sm font-medium mb-2 text-gray-700 dark:text-dark-200")}>
+                                                {item.label}
+                                            </label>
+                                        )}
                                         <Upload onChange={onChange} ref={uploadRef}>
                                             {({ ...props }) => (
                                                 <Button

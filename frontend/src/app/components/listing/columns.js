@@ -16,7 +16,8 @@ import {
     TotalCell,
     BadgeCell,
     ProgressCell,
-    RoleCell
+    RoleCell,
+    AttachCell
 } from "./rows";
 
 // ----------------------------------------------------------------------
@@ -148,6 +149,16 @@ export function Columns(fields = [], fields_order = [], isPrint = false, showPri
                 label: item.label,
                 header: item.label,
                 cell: DateCell,
+            }))
+        }
+
+        // Attach
+        if (item.fieldtype == 'Attach' || item.fieldtype == 'Attach Image') {
+            returnColumns.push(columnHelper.accessor((row) => row[item.fieldname], {
+                id: item.fieldname,
+                label: item.label,
+                header: item.label,
+                cell: AttachCell,
             }))
         }
     }
