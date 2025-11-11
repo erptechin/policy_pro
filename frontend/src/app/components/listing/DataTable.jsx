@@ -11,7 +11,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import clsx from "clsx";
-import { Fragment, useRef, useState, useEffect } from "react";
+import { Fragment, useRef, useState } from "react";
 import { Page } from "components/shared/Page";
 import { PlusIcon } from "@heroicons/react/20/solid";
 
@@ -33,14 +33,15 @@ import { Columns } from "app/components/listing/columns";
 import { Toolbar } from "app/components/listing/Toolbar";
 import { useThemeContext } from "app/contexts/theme/context";
 import { getUserAgentBrowser } from "utils/dom/getUserAgentBrowser";
+import { useAuthContext } from "app/contexts/auth/context";
 import PropTypes from "prop-types";
 
 const isSafari = getUserAgentBrowser() === "Safari";
 
-export function DataTable({ 
-  pageName, 
-  doctype, 
-  fields, 
+export function DataTable({
+  pageName,
+  doctype,
+  fields,
   addNewRoute = "add-new",
   hideAddNew = false,
   storageKey = "default",
@@ -50,10 +51,12 @@ export function DataTable({
   data = [],
   info = null,
   search = { doctype, page: 1, page_length: 10, fields: null },
-  setSearch = () => {},
-  onDeleteRow = () => {},
-  onDeleteRows = () => {}
+  setSearch = () => { },
+  onDeleteRow = () => { },
+  onDeleteRows = () => { }
 }) {
+  const { user: { user_roles } } = useAuthContext();
+  const role = user_roles[doctype];
   const { cardSkin } = useThemeContext();
   const navigate = useNavigate();
   const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper();
@@ -140,7 +143,7 @@ export function DataTable({
               {pageName}
             </h2>
           </div>
-          {!hideAddNew && (
+          {!hideAddNew && role?.create == 1 && (
             <Button
               className="h-7 space-x-1 rounded-md px-2 text-xs"
               color="primary"
@@ -198,14 +201,14 @@ export function DataTable({
                                 {header.isPlaceholder
                                   ? null
                                   : (() => {
-                                      const headerText = flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext(),
-                                      );
-                                      return typeof headerText === 'string' && headerText.length > 15
-                                        ? headerText.substring(0, 15) + '...'
-                                        : headerText;
-                                    })()}
+                                    const headerText = flexRender(
+                                      header.column.columnDef.header,
+                                      header.getContext(),
+                                    );
+                                    return typeof headerText === 'string' && headerText.length > 15
+                                      ? headerText.substring(0, 15) + '...'
+                                      : headerText;
+                                  })()}
                               </span>
                               <TableSortIcon
                                 sorted={header.column.getIsSorted()}

@@ -4,7 +4,7 @@ import { useInfo, useFeachData } from "hooks/useApiHook";
 
 const pageName = "Lead List";
 const doctype = "Lead";
-const fields = ['lead_name', 'custom_lead_status', 'source', 'email', 'mobile_no'];
+const fields = ['lead_name', 'custom_lead_status', 'custom_next_follow_up_date', 'custom_assigned_user', 'source', 'email', 'mobile_no'];
 
 export default function ListData() {
   const [orders, setOrders] = useState([]);

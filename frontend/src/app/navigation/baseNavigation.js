@@ -23,14 +23,6 @@ export const baseNavigation = [
         Icon: UserIcon,
     },
     {
-        id: 'employee',
-        type: NAV_TYPE_ITEM,
-        path: '/sales/employee',
-        title: 'Employee',
-        transKey: 'nav.sales.employee',
-        Icon: PeopleMonitorIcon,
-    },
-    {
         id: 'leads',
         type: NAV_TYPE_ITEM,
         path: '/sales/leads',

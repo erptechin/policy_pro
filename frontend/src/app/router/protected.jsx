@@ -64,27 +64,6 @@ const protectedRoutes = {
               }),
             },
             {
-              path: "employee",
-              lazy: async () => ({
-                Component: (await import("app/pages/sales/employee"))
-                  .default,
-              }),
-            },
-            {
-              path: "employee/add-new",
-              lazy: async () => ({
-                Component: (await import("app/pages/sales/employee/form"))
-                  .default,
-              }),
-            },
-            {
-              path: "employee/edit/:id",
-              lazy: async () => ({
-                Component: (await import("app/pages/sales/employee/form"))
-                  .default,
-              }),
-            },
-            {
               path: "leads",
               lazy: async () => ({
                 Component: (await import("app/pages/sales/leads"))
@@ -144,6 +123,48 @@ const protectedRoutes = {
               path: "sales-invoice/edit/:id",
               lazy: async () => ({
                 Component: (await import("app/pages/sales/sales-invoice/form"))
+                  .default,
+              }),
+            },
+            {
+              path: "cod-manager",
+              lazy: async () => ({
+                Component: (await import("app/pages/sales/cod-manager"))
+                  .default,
+              }),
+            },
+            {
+              path: "cod-manager/add-new",
+              lazy: async () => ({
+                Component: (await import("app/pages/sales/cod-manager/form"))
+                  .default,
+              }),
+            },
+            {
+              path: "cod-manager/edit/:id",
+              lazy: async () => ({
+                Component: (await import("app/pages/sales/cod-manager/form"))
+                  .default,
+              }),
+            },
+            {
+              path: "sales-agent",
+              lazy: async () => ({
+                Component: (await import("app/pages/sales/sales-agent"))
+                  .default,
+              }),
+            },
+            {
+              path: "sales-agent/add-new",
+              lazy: async () => ({
+                Component: (await import("app/pages/sales/sales-agent/form"))
+                  .default,
+              }),
+            },
+            {
+              path: "sales-agent/edit/:id",
+              lazy: async () => ({
+                Component: (await import("app/pages/sales/sales-agent/form"))
                   .default,
               }),
             },

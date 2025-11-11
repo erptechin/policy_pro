@@ -190,10 +190,11 @@
     "sales": {
       "sales": "Ventas",
       "customer": "Cliente",
-      "employee": "Empleado",
       "leads": "Oportunidades",
       "sales-order": "Orden de Venta",
-      "sales-invoice": "Factura de Venta"
+      "sales-invoice": "Factura de Venta",
+      "cod-manager": "Gerente COD",
+      "sales-agent": "Agente de Ventas"
     },
     "settings": {
       "settings": "Configuración",

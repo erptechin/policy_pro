@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"PADnwOfZ9T\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Policy Pro</span>\",\"col\":12}},{\"id\":\"1QDl93s2HV\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customers\",\"col\":3}},{\"id\":\"Nm0cmFS7Bd\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Employee\",\"col\":3}},{\"id\":\"pQp-7t_m6o\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Leads\",\"col\":3}},{\"id\":\"Aj80LpA2Fp\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Sales Order\",\"col\":3}}]",
+ "content": "[{\"id\":\"PADnwOfZ9T\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Policy Pro</span>\",\"col\":12}},{\"id\":\"1QDl93s2HV\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customers\",\"col\":3}},{\"id\":\"Nm0cmFS7Bd\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"COD Mangers\",\"col\":3}},{\"id\":\"KS0_JIUYbL\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Sales Agents\",\"col\":3}},{\"id\":\"pQp-7t_m6o\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Leads\",\"col\":3}},{\"id\":\"Aj80LpA2Fp\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Sales Order\",\"col\":3}}]",
  "creation": "2025-11-08 21:56:56.595244",
  "custom_blocks": [],
  "docstatus": 0,
@@ -13,7 +13,7 @@
  "is_hidden": 0,
  "label": "Policy Pro",
  "links": [],
- "modified": "2025-11-11 17:18:45.277792",
+ "modified": "2025-11-12 02:10:45.153532",
  "modified_by": "Administrator",
  "module": "Policy Pro",
  "name": "Policy Pro",
@@ -36,6 +36,14 @@
   {
    "color": "Grey",
    "doc_view": "List",
+   "label": "COD Mangers",
+   "link_to": "User",
+   "stats_filter": "[[\"User\",\"role_profile_name\",\"=\",\"Lead Manager\",false]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
    "label": "Leads",
    "link_to": "Lead",
    "stats_filter": "[]",
@@ -44,9 +52,9 @@
   {
    "color": "Grey",
    "doc_view": "List",
-   "label": "Employee",
-   "link_to": "Employee",
-   "stats_filter": "[]",
+   "label": "Sales Agents",
+   "link_to": "User",
+   "stats_filter": "[[\"User\",\"role_profile_name\",\"=\",\"Lead User\",false]]",
    "type": "DocType"
   },
   {

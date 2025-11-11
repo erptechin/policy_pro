@@ -1,10 +1,8 @@
-// Import Dependencies
 import React from "react";
 import { useNavigate, useParams } from "react-router";
 import { Skeleton } from "components/ui";
-import { useThemeContext } from "app/contexts/theme/context";
 import { yupResolver } from "@hookform/resolvers/yup";
-import {  useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { DocumentPlusIcon } from "@heroicons/react/24/outline";
 
 // Local Imports
@@ -14,67 +12,72 @@ import { Button, Card } from "components/ui";
 import DynamicForms from 'app/components/form/dynamicForms';
 import { useInfo, useAddData, useFeachSingle, useUpdateData } from "hooks/useApiHook";
 
-const pageName = "Employee"
-const doctype = "Employee"
-const fields = ['employee_name', 'designation', 'department']
-const subFields = ['user_id', 'status', 'custom_employee_image']
+const pageName = "COD Manager"
+const doctype = "User"
+
+const fields = [
+  'first_name',
+  'last_name',
+  'email',
+  'mobile_no',
+]
+
+const subFields = [ 'enabled','user_image']
 
 const tableFields = {
-  "ignorFields": {}
+  "ignorFields": {},
 }
 
 // ----------------------------------------------------------------------
 
-const initialState = Object.fromEntries(
-  fields.map(field => [field, ""])
-);
-
 export default function AddEditFrom() {
-  const { isDark, darkColorScheme, lightColorScheme } = useThemeContext();
-  const navigate = useNavigate();
   const { id } = useParams();
-  const { data: info, isFetching: isFetchingInfo } = useInfo({ doctype, fields: JSON.stringify([...fields, ...subFields]) });
-  const { data, isFetching: isFetchingData } = useFeachSingle({ doctype, id, fields: JSON.stringify([...fields, ...subFields]) });
+  const navigate = useNavigate();
+
+  const { data: info, isLoading: infoLoading } = useInfo({ doctype, fields: JSON.stringify([...fields, ...subFields]) });
+  const { data, isLoading: dataLoading, refetch: refetchData } = useFeachSingle({ doctype, id, fields: JSON.stringify([...fields, ...subFields]) });
+
+  const { register, handleSubmit, control, setValue, formState: { errors } } = useForm({
+    resolver: yupResolver(Schema(info?.fields)),
+    defaultValues: {}
+  });
 
   const mutationAdd = useAddData((data) => {
     if (data) {
-      reset();
-      navigate(-1)
+      navigate(-1);
     }
   });
 
   const mutationUpdate = useUpdateData((data) => {
     if (data) {
-      reset();
-      navigate(-1)
+      navigate(-1);
     }
   });
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    control,
-    reset,
-  } = useForm({
-    resolver: yupResolver(Schema(info?.fields)),
-    values: id ? data : initialState,
-  });
-
-  const onSubmit = (data) => {
+  const onSubmit = (formData) => {
     if (id) {
-      mutationUpdate.mutate({ doctype, body: { ...data, id } })
+      mutationUpdate.mutate({ doctype, body: { ...formData, id, role_profile_name: "Lead Manager" } });
     } else {
-      mutationAdd.mutate({ doctype, body: data })
+      mutationAdd.mutate({ doctype, body: { ...formData, role_profile_name: "Lead Manager" } });
     }
   };
 
-  if (isFetchingInfo || isFetchingData) {
-    return <Skeleton
-      style={{
-        "--sk-color": isDark ? darkColorScheme[700] : lightColorScheme[300],
-      }}
-    />
+  React.useEffect(() => {
+    if (data && id) {
+      Object.keys(data).forEach((key) => {
+        setValue(key, data[key]);
+      });
+    }
+  }, [data, id, setValue]);
+
+  if (infoLoading || (id && dataLoading)) {
+    return (
+      <Page title={(id ? 'Edit ' : "New ") + pageName}>
+        <div className="transition-content px-(--margin-x) pb-6">
+          <Skeleton className="h-64 w-full" />
+        </div>
+      </Page>
+    );
   }
 
   return (
@@ -99,10 +102,10 @@ export default function AddEditFrom() {
             <Button
               className="min-w-[7rem]"
               color="primary"
-              type="submit"
               form="new-post-form"
+              type="submit"
             >
-              Save
+              {id ? 'Update' : 'Save'}
             </Button>
           </div>
         </div>
@@ -112,7 +115,7 @@ export default function AddEditFrom() {
           id="new-post-form"
         >
           <div className="grid grid-cols-12 place-content-start gap-4 sm:gap-5 lg:gap-6">
-            <div className="col-span-12 lg:col-span-8">
+            <div className="col-span-12 lg:col-span-7">
               <Card className="p-4 sm:px-5">
                 <div className="mt-5 space-y-5">
                   <DynamicForms
@@ -126,7 +129,7 @@ export default function AddEditFrom() {
                 </div>
               </Card>
             </div>
-            <div className="col-span-12 space-y-4 sm:space-y-5 lg:col-span-4 lg:space-y-6">
+            <div className="col-span-12 space-y-4 sm:space-y-5 lg:col-span-5 lg:space-y-6">
               <Card className="p-4 sm:px-5">
                 <DynamicForms
                   infos={info}
@@ -143,5 +146,5 @@ export default function AddEditFrom() {
       </div>
     </Page>
   );
-};
+}
 

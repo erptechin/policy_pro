@@ -19,6 +19,7 @@ import { Avatar, Badge, Tag, Circlebar } from "components/ui";
 import { useLocaleContext } from "app/contexts/locale/context";
 import { ensureString } from "utils/ensureString";
 import { orderStatusOptions } from "./orderStatusOptions";
+import { JWT_HOST_API } from 'configs/auth.config';
 
 export const statusOptions = [
   {
@@ -244,6 +245,25 @@ export function BadgeCell({ getValue }) {
   );
 }
 
+export function ImageCell({ getValue }) {
+  const imagePath = getValue();
+  if (!imagePath) {
+    return <span className="text-gray-400 dark:text-dark-300">-</span>;
+  }
+  const imageUrl = `${JWT_HOST_API}${imagePath}`;
+  return (
+    <div className="flex items-center">
+      <Avatar
+        size={10}
+        src={imageUrl}
+        classNames={{
+          display: "rounded-lg",
+        }}
+      />
+    </div>
+  );
+}
+
 OrderIdCell.propTypes = {
   getValue: PropTypes.func,
 };
@@ -286,5 +306,9 @@ CustomerCell.propTypes = {
   row: PropTypes.object,
   column: PropTypes.object,
   table: PropTypes.object,
+  getValue: PropTypes.func,
+};
+
+ImageCell.propTypes = {
   getValue: PropTypes.func,
 };

@@ -4,7 +4,8 @@ import { useNavigate, useParams } from "react-router";
 import { Skeleton } from "components/ui";
 import { useThemeContext } from "app/contexts/theme/context";
 import { yupResolver } from "@hookform/resolvers/yup"; import { useForm, } from "react-hook-form";
-import { DocumentPlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { DocumentPlusIcon, XMarkIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
+import { useAuthContext } from "app/contexts/auth/context";
 import {
   Transition,
   TransitionChild,
@@ -76,6 +77,7 @@ const tableFields = {
 // ----------------------------------------------------------------------
 
 export default function AddEditFrom() {
+  const { user: { role_profile_name } } = useAuthContext();
   const { isDark, darkColorScheme, lightColorScheme } = useThemeContext();
   const navigate = useNavigate();
   const { id } = useParams();
@@ -108,9 +110,9 @@ export default function AddEditFrom() {
     values: id ? data : {},
   });
 
-  console.log(errors);
-
   const [showCEOApprovalModal, setShowCEOApprovalModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [ceoApprovalData, setCeoApprovalData] = useState({
     custom_assigned_user: "",
   });
@@ -186,6 +188,26 @@ export default function AddEditFrom() {
     }
   };
 
+  const handleMakeApproved = () => {
+    setShowConfirmModal(true);
+  };
+
+  const confirmApproval = () => {
+    if (id) {
+      const submitData = {
+        id,
+        custom_lead_status: "Approved"
+      };
+      mutationUpdate.mutate({ doctype, body: submitData }, {
+        onSuccess: () => {
+          setShowConfirmModal(false);
+          setShowSuccessModal(true);
+          refetchData();
+        }
+      });
+    }
+  };
+
   const onSubmit = (data) => {
     const submitData = {
       ...data,
@@ -218,14 +240,25 @@ export default function AddEditFrom() {
             </h2>
           </div>
           <div className="flex gap-2">
-            {id && data?.custom_lead_status !== "CEO Approval" && (
+            {id && role_profile_name === "Lead Manager" && data?.custom_lead_status === "CEO Approval" && (
               <Button
                 className="min-w-[7rem]"
                 variant="outlined"
-                color="secondary"
-                onClick={() => setShowCEOApprovalModal(true)}
+                color="primary"
+                onClick={handleMakeApproved}
               >
-                Submit For CEO Approval
+                Make Approved
+              </Button>
+            )}
+            {id && role_profile_name === "Lead User" && data?.custom_lead_status !== "Approved" && (
+              <Button
+                className="min-w-[7rem]"
+                variant="outlined"
+                color="primary"
+                onClick={() => setShowCEOApprovalModal(true)}
+                disabled={data?.custom_lead_status === "CEO Approval"}
+              >
+                {data?.custom_lead_status === "CEO Approval" ? "Waiting For Approval" : " Submit For CEO Approval"}
               </Button>
             )}
             <Button
@@ -459,6 +492,144 @@ export default function AddEditFrom() {
                   disabled={!allDocumentsUploaded}
                 >
                   Submit For Approval
+                </Button>
+              </div>
+            </div>
+          </TransitionChild>
+        </Transition>
+
+        {/* Confirmation Modal */}
+        <Transition appear show={showConfirmModal} as={Dialog} onClose={() => setShowConfirmModal(false)}>
+          <TransitionChild
+            as="div"
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+            className="fixed inset-0 bg-gray-900/50 transition-opacity dark:bg-black/40"
+          />
+
+          <TransitionChild
+            as={DialogPanel}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0 scale-95"
+            enterTo="opacity-100 scale-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100 scale-100"
+            leaveTo="opacity-0 scale-95"
+            className="fixed inset-0 z-100 flex items-center justify-center overflow-hidden px-4 py-6 sm:px-5"
+          >
+            <div className="scrollbar-sm relative flex w-full max-w-md flex-col rounded-lg bg-white transition-opacity duration-300 dark:bg-dark-700">
+              {/* Header */}
+              <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-dark-500">
+                <h2 className="text-lg font-semibold text-gray-800 dark:text-dark-50">
+                  Confirm Approval
+                </h2>
+                <button
+                  onClick={() => setShowConfirmModal(false)}
+                  className="rounded-lg p-1.5 hover:bg-gray-100 dark:hover:bg-dark-600"
+                >
+                  <XMarkIcon className="size-5" />
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 overflow-y-auto p-5">
+                <div className="text-center">
+                  <p className="text-base text-gray-700 dark:text-dark-200">
+                    Are you sure you want to approve this lead?
+                  </p>
+                  <p className="mt-2 text-sm text-gray-500 dark:text-dark-300">
+                    This action will change the lead status to &quot;Approved&quot;.
+                  </p>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="flex items-center justify-end gap-3 border-t border-gray-200 px-5 py-4 dark:border-dark-500">
+                <Button
+                  variant="outlined"
+                  onClick={() => setShowConfirmModal(false)}
+                >
+                  No
+                </Button>
+                <Button
+                  color="primary"
+                  onClick={confirmApproval}
+                >
+                  Yes
+                </Button>
+              </div>
+            </div>
+          </TransitionChild>
+        </Transition>
+
+        {/* Success Modal */}
+        <Transition appear show={showSuccessModal} as={Dialog} onClose={() => setShowSuccessModal(false)}>
+          <TransitionChild
+            as="div"
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+            className="fixed inset-0 bg-gray-900/50 transition-opacity dark:bg-black/40"
+          />
+
+          <TransitionChild
+            as={DialogPanel}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0 scale-95"
+            enterTo="opacity-100 scale-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100 scale-100"
+            leaveTo="opacity-0 scale-95"
+            className="fixed inset-0 z-100 flex items-center justify-center overflow-hidden px-4 py-6 sm:px-5"
+          >
+            <div className="scrollbar-sm relative flex w-full max-w-md flex-col rounded-lg bg-white transition-opacity duration-300 dark:bg-dark-700">
+              {/* Header */}
+              <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-dark-500">
+                <h2 className="text-lg font-semibold text-gray-800 dark:text-dark-50">
+                  Success
+                </h2>
+                <button
+                  onClick={() => setShowSuccessModal(false)}
+                  className="rounded-lg p-1.5 hover:bg-gray-100 dark:hover:bg-dark-600"
+                >
+                  <XMarkIcon className="size-5" />
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 overflow-y-auto p-5">
+                <div className="flex flex-col items-center justify-center space-y-4">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/20">
+                    <CheckCircleIcon className="h-10 w-10 text-green-600 dark:text-green-400" />
+                  </div>
+                  <div className="text-center">
+                    <h3 className="text-lg font-semibold text-gray-800 dark:text-dark-50">
+                      Lead Approved Successfully
+                    </h3>
+                    <p className="mt-2 text-sm text-gray-600 dark:text-dark-300">
+                      The lead status has been updated to &quot;Approved&quot;.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="flex items-center justify-end gap-3 border-t border-gray-200 px-5 py-4 dark:border-dark-500">
+                <Button
+                  color="primary"
+                  onClick={() => {
+                    setShowSuccessModal(false);
+                    refetchData();
+                  }}
+                >
+                  OK
                 </Button>
               </div>
             </div>

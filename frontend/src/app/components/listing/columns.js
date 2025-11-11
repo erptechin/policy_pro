@@ -15,7 +15,8 @@ import {
     TotalCell,
     BadgeCell,
     ProgressCell,
-    RoleCell
+    RoleCell,
+    ImageCell
 } from "./rows";
 
 // ----------------------------------------------------------------------
@@ -55,6 +56,15 @@ export function Columns(fields = [], fields_order = [], isPrint = false) {
 
     for (let item of fields) {
 
+        // Attach Image
+        if (item.fieldtype == 'Attach Image') {
+            returnColumns.push(columnHelper.accessor((row) => row[item.fieldname], {
+                id: item.fieldname,
+                label: item.label,
+                header: item.label,
+                cell: ImageCell,
+            }))
+        }
 
         // Percent
         if (item.fieldtype == 'Percent') {
@@ -149,6 +159,8 @@ export function Columns(fields = [], fields_order = [], isPrint = false) {
                 cell: DateCell,
             }))
         }
+
+
     }
 
     if (isPrint) {

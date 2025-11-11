@@ -26,14 +26,6 @@ export const sales = {
             Icon: UserIcon,
         },
         {
-            id: 'sales.employee',
-            path: path(ROOT_MASTERS, '/employee'),
-            type: NAV_TYPE_ITEM,
-            title: 'Employee',
-            transKey: 'nav.sales.employee',
-            Icon: PeopleMonitorIcon,
-        },
-        {
             id: 'sales.leads',
             path: path(ROOT_MASTERS, '/leads'),
             type: NAV_TYPE_ITEM,
@@ -48,6 +40,22 @@ export const sales = {
             title: 'Sales Order',
             transKey: 'nav.sales.sales-order',
             Icon: OrderTimerIcon,
+        },
+        {
+            id: 'sales.cod-manager',
+            path: path(ROOT_MASTERS, '/cod-manager'),
+            type: NAV_TYPE_ITEM,
+            title: 'COD Manager',
+            transKey: 'nav.sales.cod-manager',
+            Icon: PeopleMonitorIcon,
+        },
+        {
+            id: 'sales.sales-agent',
+            path: path(ROOT_MASTERS, '/sales-agent'),
+            type: NAV_TYPE_ITEM,
+            title: 'Sales Agent',
+            transKey: 'nav.sales.sales-agent',
+            Icon: UserIcon,
         },
     ]
 }

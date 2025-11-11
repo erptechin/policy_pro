@@ -133,11 +133,6 @@ after_app_install = "policy_pro.utils.after_app_install.after_app_install"
 doc_events = {
 	"Lead": {
 		"on_update": "policy_pro.api.hooks.on_update_lead"
-	},
-	"COD Document": {
-		"validate": "policy_pro.api.cod_hooks.validate_cod_document",
-		"on_submit": "policy_pro.api.cod_hooks.on_submit_cod_document",
-		"on_update_after_submit": "policy_pro.api.cod_hooks.on_update_after_submit_cod_document",
 	}
 }
 

@@ -190,10 +190,11 @@
     "sales": {
       "sales": "销售",
       "customer": "客户",
-      "employee": "员工",
       "leads": "潜在客户",
       "sales-order": "销售订单",
-      "sales-invoice": "销售发票"
+      "sales-invoice": "销售发票",
+      "cod-manager": "COD 经理",
+      "sales-agent": "销售代理"
     },
     "settings": {
       "settings": "设置",

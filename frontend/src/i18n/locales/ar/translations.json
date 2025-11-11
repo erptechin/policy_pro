@@ -190,10 +190,11 @@
     "sales": {
       "sales": "المبيعات",
       "customer": "العميل",
-      "employee": "الموظف",
       "leads": "الفرص",
       "sales-order": "أمر البيع",
-      "sales-invoice": "فاتورة البيع"
+      "sales-invoice": "فاتورة البيع",
+      "cod-manager": "مدير COD",
+      "sales-agent": "وكيل المبيعات"
     },
     "settings": {
       "settings": "الإعدادات",
