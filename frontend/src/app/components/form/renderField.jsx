@@ -34,9 +34,17 @@ const editorModules = {
 };
 
 
-export default function RenderField({ item, control, register, errors, tables }) {
+export default function RenderField({ item, control, register, errors, tables, readOnly }) {
     const uploadRef = useRef();
     if (!item) return null;
+
+    const getLabelNode = (fieldItem) => {
+        const baseLabel = fieldItem?.label;
+        const recFields = tables?.recFields ? tables?.recFields : {}
+        if (!baseLabel) return baseLabel;
+        const required = Boolean(fieldItem?.reqd) || (fieldItem.fieldname in recFields);
+        return required ? (<><span>{baseLabel}</span><span className="text-red-500"> *</span></>) : baseLabel;
+    }
 
     return (
         <div key={item.fieldname} className="form-group my-2" id={item.fieldname}>
@@ -47,47 +55,82 @@ export default function RenderField({ item, control, register, errors, tables })
                         return (
                             <Controller
                                 render={({ field: { value, onChange } }) => {
-                                    return <div>
-                                        {item.label && (
-                                            <label className={clsx("block text-sm font-medium mb-2 text-gray-700 dark:text-dark-200")}>
-                                                {item.label}
-                                            </label>
-                                        )}
-                                        <Upload onChange={onChange} ref={uploadRef}>
-                                            {({ ...props }) => (
-                                                <Button
-                                                    {...props}
-                                                    unstyled
-                                                    className={clsx(
-                                                        "mt-3 w-full shrink-0 flex-col rounded-lg border-2 border-dashed py-10 border-gray-300 dark:border-dark-450"
-                                                    )}
-                                                >
-                                                    <CloudArrowUpIcon className="size-12" />
-                                                    <span className={clsx("pointer-events-none mt-2 text-gray-600 dark:text-dark-200")}>
-                                                        <span className="text-primary-600 dark:text-primary-400">Browse</span>
-                                                        <span> or drop your files here</span>
-                                                    </span>
-                                                </Button>
+                                    const isAttachImage = item.fieldtype === 'Attach Image';
+                                    const accept = isAttachImage ? 'image/*' : undefined;
+                                    const imageUrl = value ? `${JWT_HOST_API}${value}` : '';
+                                    return (
+                                        <div>
+                                            {item.label && (
+                                                <label className="block text-xs sm:text-sm font-medium mb-2 text-gray-700 dark:text-dark-200">
+                                                    {getLabelNode(item)}
+                                                </label>
                                             )}
-                                        </Upload>
-                                        {value && <div className="mt-4 flex flex-col space-y-4">
-                                            <div className="relative inline-block">
-                                                <Avatar
-                                                    size={24}
-                                                    src={`${JWT_HOST_API}${value}`}
-                                                    classNames={{ display: "rounded-lg" }}
-                                                />
-                                                <button
-                                                    onClick={() => onChange(null)}
-                                                    className="absolute -left-2 -top-2 flex size-5 items-center justify-center rounded-full bg-red-500 text-white hover:bg-red-600 cursor-pointer"
-                                                >
-                                                    <svg xmlns="http://www.w3.org/2000/svg" className="size-3" viewBox="0 0 20 20" fill="currentColor">
-                                                        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                                                    </svg>
-                                                </button>
-                                            </div>
-                                        </div>}
-                                    </div>
+                                            <Upload onChange={onChange} ref={uploadRef} accept={accept}>
+                                                {({ onClick, disabled, ...rest }) => (
+                                                    <div
+                                                        onClick={disabled ? undefined : onClick}
+                                                        role="button"
+                                                        {...rest}
+                                                        className={clsx(
+                                                            "relative aspect-[4/3] overflow-hidden rounded-lg border group",
+                                                            "bg-gradient-to-br from-gray-100 to-gray-200 border-gray-300",
+                                                            "dark:from-gray-700 dark:to-gray-800 dark:border-gray-600"
+                                                        )}
+                                                        style={{ minHeight: '100px' }}
+                                                    >
+                                                        {value ? (
+                                                            <div className="relative w-full h-full flex items-center justify-center">
+                                                                <img
+                                                                    src={imageUrl}
+                                                                    alt="Preview"
+                                                                    className="w-full h-full object-cover rounded-lg"
+                                                                    onError={(e) => {
+                                                                        e.currentTarget.style.display = 'none';
+                                                                        const fallback = e.currentTarget.parentElement?.querySelector('.image-fallback');
+                                                                        if (fallback) fallback.setAttribute('style', 'display: flex');
+                                                                    }}
+                                                                />
+                                                                <div className="absolute inset-0 transition-all duration-200 flex items-center justify-center bg-black/70 group-hover:bg-black/50">
+                                                                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-white text-center">
+                                                                        <CloudArrowUpIcon className="h-8 w-8 mx-auto mb-2" />
+                                                                        <p className="text-sm">Change image</p>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="image-fallback absolute inset-0 hidden items-center justify-center rounded-lg text-gray-500 dark:text-gray-400">
+                                                                    <div className="text-center">
+                                                                        <CloudArrowUpIcon className="h-12 w-12 mx-auto mb-2" />
+                                                                        <p className="text-sm">Image not available</p>
+                                                                        <p className="text-xs">Click to upload new image</p>
+                                                                    </div>
+                                                                </div>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={(ev) => { ev.stopPropagation(); onChange(null); }}
+                                                                    className="absolute top-2 right-2 z-10 flex size-7 items-center justify-center rounded-full bg-red-500 text-white hover:bg-red-600 cursor-pointer ring-2 ring-white dark:ring-dark-700"
+                                                                >
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" className="size-3" viewBox="0 0 20 20" fill="currentColor">
+                                                                        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                                                    </svg>
+                                                                </button>
+                                                            </div>
+                                                        ) : (
+                                                            <div className="flex h-full flex-col items-center justify-center text-gray-500 dark:text-gray-400">
+                                                                <CloudArrowUpIcon className="h-12 w-12 mb-2" />
+                                                                <p className="text-sm font-medium">Upload image</p>
+                                                                <p className="text-xs mt-1 text-gray-400 dark:text-gray-500">Click to select image</p>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </Upload>
+                                            {errors[item.fieldname]?.message && (
+                                                <p className="text-red-400 text-xs sm:text-sm mt-0.5 flex items-center gap-1">
+                                                    <span className="text-red-500">⚠</span>
+                                                    {errors[item.fieldname]?.message}
+                                                </p>
+                                            )}
+                                        </div>
+                                    );
                                 }}
                                 control={control}
                                 {...register(item.fieldname)}
@@ -121,15 +164,16 @@ export default function RenderField({ item, control, register, errors, tables })
                                         return <Input
                                             value={value}
                                             onChange={onChange}
-                                            label={item.label}
+                                            label={getLabelNode(item)}
                                             placeholder={`Enter the ${item.label}`}
                                             component={Cleave}
-                                            options={{
-                                                numericOnly: true,
-                                                blocks: [0, 3, 3, 4],
-                                                delimiters: [' ', ' ', '-']
-                                            }}
+                                            // options={{
+                                            //     numericOnly: true,
+                                            //     blocks: [0, 3, 3, 4],
+                                            //     delimiters: [' ', ' ', '-']
+                                            // }}
                                             error={errors[item.fieldname]?.message}
+                                            readOnly={readOnly}
                                         />
                                     } else {
                                         return <div className="items-center w-full relative">
@@ -137,7 +181,7 @@ export default function RenderField({ item, control, register, errors, tables })
                                                 type={item.fieldtype === 'Int' || item.fieldtype === 'Float' ? "number" : "text"}
                                                 value={value}
                                                 onChange={onChange}
-                                                label={item.label}
+                                                label={getLabelNode(item)}
                                                 component={item.fieldtype === 'Int' || item.fieldtype === 'Float' ? Cleave : undefined}
                                                 options={
                                                     item.fieldtype === 'Int'
@@ -158,6 +202,7 @@ export default function RenderField({ item, control, register, errors, tables })
                                                             : undefined
                                                 }
                                                 error={errors[item.fieldname]?.message}
+                                                readOnly={readOnly}
                                             />
                                             <div className="absolute top-0 right-0">
                                                 {item.description && <ContextualHelp
@@ -179,7 +224,7 @@ export default function RenderField({ item, control, register, errors, tables })
                                     return <Input
                                         value={value}
                                         onChange={onChange}
-                                        label={item.label}
+                                        label={getLabelNode(item)}
                                         placeholder={`Enter the ${item.label}`}
                                         error={errors[item.fieldname]?.message}
                                     />
@@ -197,7 +242,7 @@ export default function RenderField({ item, control, register, errors, tables })
                                     return <Input
                                         value={value}
                                         readOnly={true}
-                                        label={item.label}
+                                        label={getLabelNode(item)}
                                         placeholder={`Enter the ${item.label}`}
                                         error={errors[item.fieldname]?.message}
                                     />
@@ -217,7 +262,7 @@ export default function RenderField({ item, control, register, errors, tables })
                                     <Input
                                         type="number"
                                         value={value}
-                                        label={item.label}
+                                        label={getLabelNode(item)}
                                         placeholder={`Enter the ${item.label}`}
                                         {...register(item.fieldname)}
                                         error={errors[item.fieldname]?.message}
@@ -232,7 +277,7 @@ export default function RenderField({ item, control, register, errors, tables })
                         return (
                             <Checkbox
                                 variant="outlined"
-                                label={item.label}
+                                label={getLabelNode(item)}
                                 {...register(item.fieldname)}
                                 error={errors[item.fieldname]?.message}
                             />
@@ -248,10 +293,11 @@ export default function RenderField({ item, control, register, errors, tables })
                         );
 
                     case 'Small Text':
+                    case 'Long Text':
                         return (
                             <Textarea
                                 rows={4}
-                                label={item.label}
+                                label={getLabelNode(item)}
                                 placeholder={`Enter the ${item.label}`}
                                 component={TextareaAutosize}
                                 minRows={4}
@@ -269,7 +315,7 @@ export default function RenderField({ item, control, register, errors, tables })
                                     let newValue = (value && typeof value === 'object') ? value.ops[0].insert : (value ? value : '')
                                     const html = `${newValue}`;
                                     return <TextEditor
-                                        label={item.label}
+                                        label={getLabelNode(item)}
                                         value={htmlToDelta(html ? html : '<p></p>')}
                                         placeholder={`Enter ${item.label}`}
                                         className="mt-1.5 [&_.ql-editor]:max-h-80 [&_.ql-editor]:min-h-[12rem]"
@@ -292,7 +338,7 @@ export default function RenderField({ item, control, register, errors, tables })
                                         <SearchSelect
                                             onChange={onChange}
                                             value={value}
-                                            label={item.label}
+                                            label={getLabelNode(item)}
                                             lists={options}
                                             placeholder={`${item.label}`}
                                             error={errors[item.fieldname]?.message}
@@ -321,7 +367,7 @@ export default function RenderField({ item, control, register, errors, tables })
                                                 }
                                             }}
                                             value={value}
-                                            label={item.label}
+                                            label={getLabelNode(item)}
                                             multiple={true}
                                             data={item?.options_list || []}
                                             placeholder={`${item.label}`}
@@ -346,10 +392,10 @@ export default function RenderField({ item, control, register, errors, tables })
                                         <SearchSelect
                                             onChange={onChange}
                                             value={value}
-                                            label={item.label}
+                                            label={getLabelNode(item)}
                                             lists={item.options_list}
                                             placeholder={`${item.label}`}
-                                            isAddNew={true}
+                                            isAddNew={item.isAddNew == "no" ? false : true}
                                             rootItem={item}
                                             error={errors[item.fieldname]?.message}
                                             {...rest}
@@ -370,7 +416,7 @@ export default function RenderField({ item, control, register, errors, tables })
                                         <SearchSelectDynamic
                                             onChange={onChange}
                                             value={value}
-                                            label={item.label}
+                                            label={getLabelNode(item)}
                                             option={item.options}
                                             control={control}
                                             placeholder={`${item.label}`}
@@ -395,7 +441,7 @@ export default function RenderField({ item, control, register, errors, tables })
                                         <TableBox
                                             onChange={onChange}
                                             values={value}
-                                            label={item.label}
+                                            label={getLabelNode(item)}
                                             isAddNew={true}
                                             rootItem={item}
                                             tableFields={tables ? tables[item.fieldname] : {}}
@@ -418,15 +464,27 @@ export default function RenderField({ item, control, register, errors, tables })
                                 render={({ field: { onChange, value, ...rest } }) => {
                                     const onChangeDate = (obj) => {
                                         const date = new Date(obj[0]);
-                                        date.setDate(date.getDate() + 1);
-                                        const formatted = new Date(date).toISOString().split('T')[0];
+
+                                        let formatted;
+                                        if (item.fieldtype === 'Time') {
+                                            // For Time fields, format as HH:MM:SS
+                                            formatted = date.toTimeString().split(' ')[0];
+                                        } else if (item.fieldtype === 'Datetime') {
+                                            // For Datetime fields, format as full ISO string
+                                            formatted = date.toISOString();
+                                        } else {
+                                            // For Date fields, format as YYYY-MM-DD
+                                            date.setDate(date.getDate() + 1);
+                                            formatted = new Date(date).toISOString().split('T')[0];
+                                        }
+
                                         onChange(formatted)
                                     }
                                     return <div className="items-center w-full relative">
                                         <DatePicker
                                             onChange={onChangeDate}
                                             value={value || ""}
-                                            label={item.label}
+                                            label={getLabelNode(item)}
                                             error={errors[item.fieldname]?.message}
                                             options={
                                                 item.fieldtype === 'Time'

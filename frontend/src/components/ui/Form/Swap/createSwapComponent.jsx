@@ -14,7 +14,7 @@ function createSwapComponent({ currentVal }) {
         {...{ [`data-swap-${currentVal}`]: true }}
         ref={ref}
         className={clsx(
-          "z-10 col-start-1 row-start-1 fill-current transition-[transform,opacity] duration-300 ease-out",
+          "z-10 col-start-1 row-start-1 fill-current transition-[transform, opacity] duration-300 ease-out",
           `swap-${currentVal}`,
           className,
         )}

@@ -103,7 +103,7 @@ export function Toolbar({ table }) {
       <SearchInput table={table} />
       <div className={clsx("flex", enableFullScreen && "ltr:-mr-2 rtl:-ml-2")}>
         <TableConfig table={table} />
-        <Menu
+        {/* <Menu
           as="div"
           className="relative inline-block whitespace-nowrap text-left ml-2"
         >
@@ -155,7 +155,7 @@ export function Toolbar({ table }) {
               )}
             </MenuItem>
           </Transition>
-        </Menu>
+        </Menu> */}
       </div>
     </div>
   );

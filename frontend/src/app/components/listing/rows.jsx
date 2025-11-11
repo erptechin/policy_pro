@@ -19,7 +19,6 @@ import { Avatar, Badge, Tag, Circlebar } from "components/ui";
 import { useLocaleContext } from "app/contexts/locale/context";
 import { ensureString } from "utils/ensureString";
 import { orderStatusOptions } from "./orderStatusOptions";
-import { JWT_HOST_API } from 'configs/auth.config';
 
 export const statusOptions = [
   {
@@ -245,37 +244,6 @@ export function BadgeCell({ getValue }) {
   );
 }
 
-export function AttachCell({ getValue }) {
-  const value = getValue();
-  if (!value) return <span className="text-gray-400 dark:text-dark-300">-</span>;
-  
-  const fileUrl = `${JWT_HOST_API}${value}`;
-  const isImage = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(value);
-  
-  if (isImage) {
-    return (
-      <div className="flex items-center">
-        <Avatar
-          size={8}
-          src={fileUrl}
-          classNames={{ display: "rounded-lg" }}
-        />
-      </div>
-    );
-  }
-  
-  return (
-    <a
-      href={fileUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-primary-600 dark:text-primary-400 hover:underline text-xs truncate max-w-xs block"
-    >
-      {value.split('/').pop()}
-    </a>
-  );
-}
-
 OrderIdCell.propTypes = {
   getValue: PropTypes.func,
 };
@@ -318,9 +286,5 @@ CustomerCell.propTypes = {
   row: PropTypes.object,
   column: PropTypes.object,
   table: PropTypes.object,
-  getValue: PropTypes.func,
-};
-
-AttachCell.propTypes = {
   getValue: PropTypes.func,
 };

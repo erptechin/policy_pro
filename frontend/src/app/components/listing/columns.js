@@ -1,6 +1,5 @@
 // Import Dependencies
 import { createColumnHelper } from "@tanstack/react-table";
-import { createElement } from "react";
 
 // Local Imports
 import { RowActions } from "./RowActions";
@@ -16,15 +15,14 @@ import {
     TotalCell,
     BadgeCell,
     ProgressCell,
-    RoleCell,
-    AttachCell
+    RoleCell
 } from "./rows";
 
 // ----------------------------------------------------------------------
 
 const columnHelper = createColumnHelper();
 
-export function Columns(fields = [], fields_order = [], isPrint = false, showPrint = false, showOnlyPrint = false) {
+export function Columns(fields = [], fields_order = [], isPrint = false) {
     let returnColumns = []
     // Sort fields based on fields_order array
     // const sortedFields = [...fields].sort((a, b) => {
@@ -151,16 +149,6 @@ export function Columns(fields = [], fields_order = [], isPrint = false, showPri
                 cell: DateCell,
             }))
         }
-
-        // Attach
-        if (item.fieldtype == 'Attach' || item.fieldtype == 'Attach Image') {
-            returnColumns.push(columnHelper.accessor((row) => row[item.fieldname], {
-                id: item.fieldname,
-                label: item.label,
-                header: item.label,
-                cell: AttachCell,
-            }))
-        }
     }
 
     if (isPrint) {
@@ -172,15 +160,11 @@ export function Columns(fields = [], fields_order = [], isPrint = false, showPri
         }))
     }
 
-    const ActionsCell = (props) => {
-        return createElement(RowActions, { ...props, showPrint, showOnlyPrint });
-    };
-    
     returnColumns.push(columnHelper.display({
         id: "actions",
         label: "Row Actions",
         header: "Actions",
-        cell: ActionsCell
+        cell: RowActions
     }))
 
     return returnColumns

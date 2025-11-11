@@ -4,11 +4,10 @@ import * as Yup from 'yup'
 // ----------------------------------------------------------------------
 
 export function Schema(fields = []) {
-
     const schemaFields = {}
 
     for (let item of fields) {
-        if (item.reqd && item.read_only === 0) {
+        if (item.reqd && item.read_only === 0 || item.fieldname === "role_profile_name") {
             if (item.fieldtype == "Table") {
                 schemaFields[item.fieldname] = Yup.array()
                     .transform((value, originalValue) =>

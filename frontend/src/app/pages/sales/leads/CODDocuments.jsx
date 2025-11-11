@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Button, Upload, Card, Table, THead, TBody, Th, Tr, Td, Avatar } from "components/ui";
 import { PlusIcon, XMarkIcon, CloudArrowUpIcon } from "@heroicons/react/24/outline";
+import { SearchSelect } from "app/components/form/SearchSelect";
 import clsx from "clsx";
 import {
   Transition,
@@ -18,6 +19,17 @@ export default function CODDocuments({ id, data, setValue, refetchData }) {
     file_attachment: "",
     comments: ""
   });
+
+  // Document type options for SearchSelect
+  const documentTypeOptions = [
+    { label: "Car Mulkiya", value: "Car Mulkiya" },
+    { label: "Driving License", value: "Driving License" },
+    { label: "Emirates ID", value: "Emirates ID" },
+    { label: "Invoice", value: "Invoice" },
+    { label: "Credit Note", value: "Credit Note" },
+    { label: "Debit Note", value: "Debit Note" },
+    { label: "Car Passing", value: "Car Passing" }
+  ];
 
   const mutationUpdate = useUpdateData((data) => {
     if (data) {
@@ -197,24 +209,17 @@ export default function CODDocuments({ id, data, setValue, refetchData }) {
             <div className="flex-1 overflow-y-auto p-5">
               <div className="space-y-4">
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-dark-100">
-                    Document Type <span className="text-red-500">*</span>
-                  </label>
-                  <select
+                  <SearchSelect
+                    label={
+                      <>
+                        Document Type <span className="text-red-500">*</span>
+                      </>
+                    }
+                    lists={documentTypeOptions}
                     value={newCODDocument.document_type}
-                    onChange={(e) => setNewCODDocument({ ...newCODDocument, document_type: e.target.value })}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 dark:border-dark-400 dark:bg-dark-500 dark:text-dark-50"
-                    required
-                  >
-                    <option value="">Select Document Type</option>
-                    <option value="Car Mulkiya">Car Mulkiya</option>
-                    <option value="Driving License">Driving License</option>
-                    <option value="Emirates ID">Emirates ID</option>
-                    <option value="Invoice">Invoice</option>
-                    <option value="Credit Note">Credit Note</option>
-                    <option value="Debit Note">Debit Note</option>
-                    <option value="Car Passing">Car Passing</option>
-                  </select>
+                    onChange={(value) => setNewCODDocument({ ...newCODDocument, document_type: value || "" })}
+                    placeholder="Select Document Type"
+                  />
                 </div>
 
                 <div>

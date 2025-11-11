@@ -11,7 +11,6 @@ import {
   EllipsisHorizontalIcon,
   EyeIcon,
   PencilIcon,
-  PrinterIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import clsx from "clsx";
@@ -24,7 +23,7 @@ import { Button } from "components/ui";
 import { useDeleteData } from "hooks/useApiHook";
 // ----------------------------------------------------------------------
 
-export function RowActions({ row, table, isPrint, showPrint = false, showOnlyPrint = false }) {
+export function RowActions({ row, table, isPrint }) {
   const navigate = useNavigate();
   const doctype = table.options.doctype
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -67,10 +66,6 @@ export function RowActions({ row, table, isPrint, showPrint = false, showOnlyPri
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [row]);
 
-  const handlePrint = () => {
-    window.open(`/printview?doctype=${doctype}&name=${row.original.id}&no_letterhead=1&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en`, "_blank");
-  };
-
   const state = deleteError ? "error" : deleteSuccess ? "success" : "pending";
 
   return (
@@ -93,102 +88,63 @@ export function RowActions({ row, table, isPrint, showPrint = false, showOnlyPri
             leave="transition ease-in"
             leaveFrom="opacity-100 translate-y-0"
             leaveTo="opacity-0 translate-y-2"
-            className="absolute z-50 -top-[50px] right-[75px] min-w-[10rem] rounded-lg border border-gray-300 bg-white py-1 shadow-lg shadow-gray-200/50 outline-hidden focus-visible:outline-hidden dark:border-dark-500 dark:bg-dark-750 dark:shadow-none ltr:right-0 rtl:left-0"
+            className="absolute min-w-[10rem] rounded-lg border border-gray-300 bg-white py-1 shadow-lg shadow-gray-200/50 outline-hidden focus-visible:outline-hidden dark:border-dark-500 dark:bg-dark-750 dark:shadow-none ltr:right-0 rtl:left-0 z-500 top-[-45px] right-[45px]"
           >
-            {showOnlyPrint ? (
-              <MenuItem>
-                {({ focus }) => (
-                  <button
-                    onClick={handlePrint}
-                    className={clsx(
-                      "flex h-9 w-full items-center space-x-3 px-3 tracking-wide outline-hidden transition-colors ",
-                      focus &&
-                      "bg-gray-100 text-gray-800 dark:bg-dark-600 dark:text-dark-100",
-                    )}
-                  >
-                    <PrinterIcon className="size-4.5 stroke-1" />
-                    <span>Print</span>
-                  </button>
-                )}
-              </MenuItem>
-            ) : (
-              <>
-                {/* <MenuItem>
-                  {({ focus }) => (
-                    <button
-                      className={clsx(
-                        "flex h-9 w-full items-center space-x-3 px-3 tracking-wide outline-hidden transition-colors ",
-                        focus &&
-                        "bg-gray-100 text-gray-800 dark:bg-dark-600 dark:text-dark-100",
-                      )}
-                    >
-                      <EyeIcon className="size-4.5 stroke-1" />
-                      <span>View</span>
-                    </button>
+            {/* <MenuItem>
+              {({ focus }) => (
+                <button
+                  className={clsx(
+                    "flex h-9 w-full items-center space-x-3 px-3 tracking-wide outline-hidden transition-colors ",
+                    focus &&
+                    "bg-gray-100 text-gray-800 dark:bg-dark-600 dark:text-dark-100",
                   )}
-                </MenuItem> */}
-                <MenuItem>
-                  {({ focus }) => (
-                    <button
-                      onClick={() => navigate(`edit/${row.original.id}`)}
-                      className={clsx(
-                        "flex h-9 w-full items-center space-x-3 px-3 tracking-wide outline-hidden transition-colors ",
-                        focus &&
-                        "bg-gray-100 text-gray-800 dark:bg-dark-600 dark:text-dark-100",
-                      )}
-                    >
-                      <PencilIcon className="size-4.5 stroke-1" />
-                      <span>Edit</span>
-                    </button>
+                >
+                  <EyeIcon className="size-4.5 stroke-1" />
+                  <span>View</span>
+                </button>
+              )}
+            </MenuItem> */}
+            <MenuItem>
+              {({ focus }) => (
+                <button
+                  onClick={() => navigate(`edit/${row.original.id}`)}
+                  className={clsx(
+                    "flex h-9 w-full items-center space-x-3 px-3 tracking-wide outline-hidden transition-colors ",
+                    focus &&
+                    "bg-gray-100 text-gray-800 dark:bg-dark-600 dark:text-dark-100",
                   )}
-                </MenuItem>
-                {showPrint && (
-                  <MenuItem>
-                    {({ focus }) => (
-                      <button
-                        onClick={handlePrint}
-                        className={clsx(
-                          "flex h-9 w-full items-center space-x-3 px-3 tracking-wide outline-hidden transition-colors ",
-                          focus &&
-                          "bg-gray-100 text-gray-800 dark:bg-dark-600 dark:text-dark-100",
-                        )}
-                      >
-                        <PrinterIcon className="size-4.5 stroke-1" />
-                        <span>Print</span>
-                      </button>
-                    )}
-                  </MenuItem>
-                )}
-                <MenuItem>
-                  {({ focus }) => (
-                    <button
-                      onClick={openModal}
-                      className={clsx(
-                        "this:error flex h-9 w-full items-center space-x-3 px-3 tracking-wide text-this outline-hidden transition-colors dark:text-this-light ",
-                        focus && "bg-this/10 dark:bg-this-light/10",
-                      )}
-                    >
-                      <TrashIcon className="size-4.5 stroke-1" />
-                      <span>Delete</span>
-                    </button>
+                >
+                  <PencilIcon className="size-4.5 stroke-1" />
+                  <span>Edit</span>
+                </button>
+              )}
+            </MenuItem>
+            <MenuItem>
+              {({ focus }) => (
+                <button
+                  onClick={openModal}
+                  className={clsx(
+                    "this:error flex h-9 w-full items-center space-x-3 px-3 tracking-wide text-this outline-hidden transition-colors dark:text-this-light ",
+                    focus && "bg-this/10 dark:bg-this-light/10",
                   )}
-                </MenuItem>
-              </>
-            )}
+                >
+                  <TrashIcon className="size-4.5 stroke-1" />
+                  <span>Delete</span>
+                </button>
+              )}
+            </MenuItem>
           </Transition>
         </Menu>
       </div>
 
-      {!showOnlyPrint && (
-        <ConfirmModal
-          show={deleteModalOpen}
-          onClose={closeModal}
-          messages={confirmMessages}
-          onOk={handleDeleteRows}
-          confirmLoading={confirmDeleteLoading}
-          state={state}
-        />
-      )}
+      <ConfirmModal
+        show={deleteModalOpen}
+        onClose={closeModal}
+        messages={confirmMessages}
+        onOk={handleDeleteRows}
+        confirmLoading={confirmDeleteLoading}
+        state={state}
+      />
     </>
   );
 }
@@ -196,7 +152,4 @@ export function RowActions({ row, table, isPrint, showPrint = false, showOnlyPri
 RowActions.propTypes = {
   row: PropTypes.object,
   table: PropTypes.object,
-  isPrint: PropTypes.bool,
-  showPrint: PropTypes.bool,
-  showOnlyPrint: PropTypes.bool,
 };
