@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { Controller, useWatch } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 import { SketchPicker } from 'react-color';
 import Cleave from "cleave.js/react";
 import TextareaAutosize from "react-textarea-autosize";
