@@ -17,8 +17,36 @@ import { useInfo, useAddData, useFeachSingle, useUpdateData } from "hooks/useApi
 const pageName = "Lead"
 const doctype = "Lead"
 
-const fields = ['lead_name', 'status', 'source', 'email', 'mobile_no']
-const subFields = ['custom_call_back_date', 'custom_call_back_time', 'custom_call_back_notes']
+const fields = [
+  'lead_name',
+  'status',
+  'source',
+  'email',
+  'mobile_no',
+  'custom_car_year',
+  'custom_car_brand_new',
+  'custom_car_make',
+  'custom_car_model',
+  'custom_car_emirate',
+  'custom_car_registration_date',
+  'custom_policy_start_date',
+  'custom_date_of_birth',
+  'custom_license_country',
+  'custom_driving_experience',
+  'custom_nationality'
+]
+
+const subFields = [
+  'custom_call_back_date',
+  'custom_call_back_time',
+  'custom_call_back_notes',
+  'custom_claims_last_12_months',
+  'custom_gcc_specification',
+  'custom_current_policy_active',
+  'custom_no_claims_years',
+  'custom_personal_use_only',
+  'custom_policy_fully_comprehensive'
+]
 
 const tableFields = {
   "ignorFields": {}
