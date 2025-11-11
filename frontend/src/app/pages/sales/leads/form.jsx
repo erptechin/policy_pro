@@ -1,5 +1,5 @@
 // Import Dependencies
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useNavigate, useParams } from "react-router";
 import { Skeleton } from "components/ui";
 import { useThemeContext } from "app/contexts/theme/context";
@@ -31,7 +31,8 @@ const fields = [
   'custom_date_of_birth',
   'custom_license_country',
   'custom_driving_experience',
-  'custom_nationality'
+  'custom_nationality',
+  'custom_followup_history'
 ]
 
 const subFields = [
@@ -49,6 +50,11 @@ const subFields = [
 ]
 
 const tableFields = {
+  "custom_followup_history": {
+    "description": true,
+    "next_date": true,
+    "created_date": true
+  },
   "ignorFields": {}
 }
 
@@ -87,10 +93,14 @@ export default function AddEditFrom() {
   });
 
   const onSubmit = (data) => {
+    const submitData = {
+      ...data,
+      status: id ? data.status : "Open"
+    };
     if (id) {
-      mutationUpdate.mutate({ doctype, body: { ...data, id } })
+      mutationUpdate.mutate({ doctype, body: { ...submitData, id } })
     } else {
-      mutationAdd.mutate({ doctype, body: { ...data, status: "Open" } })
+      mutationAdd.mutate({ doctype, body: submitData })
     }
   };
 

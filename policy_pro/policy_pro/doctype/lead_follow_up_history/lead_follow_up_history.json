@@ -1,0 +1,52 @@
+{
+    "actions": [],
+    "allow_rename": 0,
+    "creation": "2025-11-11 23:34:06.777347",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+        "description",
+        "next_date",
+        "created_date"
+    ],
+    "fields": [
+        {
+            "fieldname": "description",
+            "fieldtype": "Small Text",
+            "in_list_view": 1,
+            "label": "Description",
+            "reqd": 1
+        },
+        {
+            "fieldname": "next_date",
+            "fieldtype": "Date",
+            "in_list_view": 1,
+            "label": "Next Follow-up Date"
+        },
+        {
+            "fieldname": "created_date",
+            "fieldtype": "Date",
+            "label": "Created Date",
+            "default": "Today",
+            "read_only": 1
+        }
+    ],
+    "grid_page_length": 50,
+    "index_web_pages_for_search": 0,
+    "istable": 1,
+    "links": [],
+    "modified": "2025-11-11 23:34:12.306317",
+    "modified_by": "Administrator",
+    "module": "Policy Pro",
+    "name": "Lead Follow Up History",
+    "owner": "Administrator",
+    "permissions": [],
+    "row_format": "Dynamic",
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "states": [],
+    "track_changes": 0,
+    "track_seen": 0,
+    "track_views": 0
+}
