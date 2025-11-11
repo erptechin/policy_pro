@@ -2,13 +2,26 @@ import frappe
 from frappe import _
 
 def after_app_install(app_name):
-    """Create Lead Manager and Lead User roles after app installation"""
+    """Create all required roles after app installation"""
+    # Create Sales roles
+    create_sales_user_role()
+    create_sales_manager_role()
+    create_sales_agent_role()
+    # Create legacy roles (for backward compatibility)
     create_lead_manager_role()
     create_lead_user_role()
+    # Create profiles
+    create_sales_user_profile()
+    create_sales_manager_profile()
+    create_sales_agent_profile()
     create_lead_manager_profile()
     create_lead_user_profile()
+    # Assign roles to profiles
     assign_profile_to_roles()
+    assign_sales_profile_to_roles()
+    # Add permissions
     add_role_permissions()
+    add_sales_role_permissions()
     update_website_settings()
 
 def create_lead_manager_role():
@@ -189,6 +202,165 @@ def verify_role_permissions():
         print(f'- {p.parent}: read={p.read}, write={p.write}, create={p.create}')
     
     return perms
+
+# ============================================================================
+# SALES ROLES CREATION
+# ============================================================================
+
+def create_sales_user_role():
+    """Create Sales User role if it doesn't exist"""
+    if not frappe.db.exists("Role", "Sales User"):
+        role = frappe.get_doc({
+            "doctype": "Role",
+            "role_name": "Sales User",
+            "desk_access": 1,
+            "restrict_to_domain": None
+        })
+        role.insert(ignore_permissions=True)
+        frappe.db.commit()
+        print("Sales User role created successfully")
+    else:
+        print("Sales User role already exists")
+
+def create_sales_manager_role():
+    """Create Sales Manager role if it doesn't exist"""
+    if not frappe.db.exists("Role", "Sales Manager"):
+        role = frappe.get_doc({
+            "doctype": "Role",
+            "role_name": "Sales Manager",
+            "desk_access": 1,
+            "restrict_to_domain": None
+        })
+        role.insert(ignore_permissions=True)
+        frappe.db.commit()
+        print("Sales Manager role created successfully")
+    else:
+        print("Sales Manager role already exists")
+
+def create_sales_agent_role():
+    """Create Sales Agent role if it doesn't exist"""
+    if not frappe.db.exists("Role", "Sales Agent"):
+        role = frappe.get_doc({
+            "doctype": "Role",
+            "role_name": "Sales Agent",
+            "desk_access": 1,
+            "restrict_to_domain": None
+        })
+        role.insert(ignore_permissions=True)
+        frappe.db.commit()
+        print("Sales Agent role created successfully")
+    else:
+        print("Sales Agent role already exists")
+
+def create_sales_user_profile():
+    """Create Sales User profile if it doesn't exist"""
+    if not frappe.db.exists("Role Profile", "Sales User"):
+        profile = frappe.get_doc({
+            "doctype": "Role Profile",
+            "role_profile": "Sales User",
+            "roles": []
+        })
+        profile.insert(ignore_permissions=True)
+        frappe.db.commit()
+        print("Sales User profile created successfully")
+    else:
+        print("Sales User profile already exists")
+
+def create_sales_manager_profile():
+    """Create Sales Manager profile if it doesn't exist"""
+    if not frappe.db.exists("Role Profile", "Sales Manager"):
+        profile = frappe.get_doc({
+            "doctype": "Role Profile",
+            "role_profile": "Sales Manager",
+            "roles": []
+        })
+        profile.insert(ignore_permissions=True)
+        frappe.db.commit()
+        print("Sales Manager profile created successfully")
+    else:
+        print("Sales Manager profile already exists")
+
+def create_sales_agent_profile():
+    """Create Sales Agent profile if it doesn't exist"""
+    if not frappe.db.exists("Role Profile", "Sales Agent"):
+        profile = frappe.get_doc({
+            "doctype": "Role Profile",
+            "role_profile": "Sales Agent",
+            "roles": []
+        })
+        profile.insert(ignore_permissions=True)
+        frappe.db.commit()
+        print("Sales Agent profile created successfully")
+    else:
+        print("Sales Agent profile already exists")
+
+def assign_sales_profile_to_roles():
+    """Assign sales roles to their respective profiles"""
+    # Sales User
+    if frappe.db.exists("Role", "Sales User") and frappe.db.exists("Role Profile", "Sales User"):
+        profile = frappe.get_doc("Role Profile", "Sales User")
+        role_assigned = any(row.role == "Sales User" for row in profile.roles)
+        if not role_assigned:
+            profile.append("roles", {"role": "Sales User"})
+            profile.save(ignore_permissions=True)
+            frappe.db.commit()
+            print("Sales User role assigned to Sales User profile successfully")
+    
+    # Sales Manager
+    if frappe.db.exists("Role", "Sales Manager") and frappe.db.exists("Role Profile", "Sales Manager"):
+        profile = frappe.get_doc("Role Profile", "Sales Manager")
+        role_assigned = any(row.role == "Sales Manager" for row in profile.roles)
+        if not role_assigned:
+            profile.append("roles", {"role": "Sales Manager"})
+            profile.save(ignore_permissions=True)
+            frappe.db.commit()
+            print("Sales Manager role assigned to Sales Manager profile successfully")
+    
+    # Sales Agent
+    if frappe.db.exists("Role", "Sales Agent") and frappe.db.exists("Role Profile", "Sales Agent"):
+        profile = frappe.get_doc("Role Profile", "Sales Agent")
+        role_assigned = any(row.role == "Sales Agent" for row in profile.roles)
+        if not role_assigned:
+            profile.append("roles", {"role": "Sales Agent"})
+            profile.save(ignore_permissions=True)
+            frappe.db.commit()
+            print("Sales Agent role assigned to Sales Agent profile successfully")
+
+def add_sales_role_permissions():
+    """Add role permissions for Sales roles"""
+    # Sales User - Can view won leads and assign leads (read-only for most fields)
+    if frappe.db.exists("Role", "Sales User"):
+        add_doctype_permission("Lead", "Sales User", {
+            "read": 1,
+            "write": 0,  # Cannot edit lead details, only assign
+            "create": 0,
+            "delete": 0,
+            "share": 0
+        })
+        print("Role permissions added successfully for Sales User")
+    
+    # Sales Manager - Full access to leads
+    if frappe.db.exists("Role", "Sales Manager"):
+        add_doctype_permission("Lead", "Sales Manager", {
+            "read": 1,
+            "write": 1,
+            "create": 1,
+            "delete": 1,
+            "share": 1
+        })
+        print("Role permissions added successfully for Sales Manager")
+    
+    # Sales Agent - Can only edit assigned leads
+    if frappe.db.exists("Role", "Sales Agent"):
+        add_doctype_permission("Lead", "Sales Agent", {
+            "if_owner": 1,
+            "read": 1,
+            "write": 1,
+            "create": 1,
+            "delete": 0,
+            "share": 0
+        })
+        print("Role permissions added successfully for Sales Agent")
 
 def update_website_settings():
     """Update Website Settings with home_page = 'index'"""

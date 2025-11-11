@@ -16,9 +16,9 @@ import { useInfo, useAddData, useFeachSingle, useUpdateData } from "hooks/useApi
 const pageName = "Lead List"
 const doctype = "Lead"
 const fields = [
-  'lead_name', 
-  'status', 
-  'source', 
+  'lead_name',
+  'status',
+  'source',
   'company_name',
   'custom_car_year',
   'custom_car_brand_new',
@@ -30,12 +30,15 @@ const fields = [
   'custom_driving_experience',
   'custom_nationality',
   'custom_car_registration_date',
-  'custom_policy_start_date'
+  'custom_policy_start_date',
+  'custom_call_back_date',
+  'custom_call_back_time',
+  'custom_call_back_notes'
 ]
 const subFields = [
-  'email', 
-  'phone', 
-  'mobile_no', 
+  'email',
+  'phone',
+  'mobile_no',
   'address',
   'custom_current_policy_active',
   'custom_claims_last_12_months',

@@ -118,13 +118,9 @@ after_app_install = "policy_pro.utils.after_app_install.after_app_install"
 # -----------
 # Permissions evaluated in scripted ways
 
-# permission_query_conditions = {
-# 	"Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
-# }
-#
-# has_permission = {
-# 	"Event": "frappe.desk.doctype.event.event.has_permission",
-# }
+permission_query_conditions = {
+	"Lead": "policy_pro.api.lead_hooks.get_lead_permission_query_conditions",
+}
 
 # DocType Class
 # ---------------
@@ -138,13 +134,18 @@ after_app_install = "policy_pro.utils.after_app_install.after_app_install"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+	"Lead": {
+		"validate": "policy_pro.api.lead_hooks.validate_lead",
+		"on_insert": "policy_pro.api.lead_hooks.on_insert_lead",
+		"on_update": "policy_pro.api.lead_hooks.on_update_lead",
+	},
+	"COD Document": {
+		"validate": "policy_pro.api.cod_hooks.validate_cod_document",
+		"on_submit": "policy_pro.api.cod_hooks.on_submit_cod_document",
+		"on_update_after_submit": "policy_pro.api.cod_hooks.on_update_after_submit_cod_document",
+	}
+}
 
 # Scheduled Tasks
 # ---------------
