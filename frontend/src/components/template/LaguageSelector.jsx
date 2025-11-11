@@ -51,7 +51,7 @@ const LanguageSelector = () => {
           ) : (
             <img
               className="size-6"
-              src={`/assets/my_nonprofit/images/flags/svg/rounded/${locales[locale].flag}.svg`}
+              src={`/assets/policy_pro/images/flags/svg/rounded/${locales[locale].flag}.svg`}
               alt={locale}
             />
           )}
@@ -85,7 +85,7 @@ const LanguageSelector = () => {
                 <div className="flex gap-3">
                   <img
                     className="size-5"
-                    src={`/assets/my_nonprofit/images/flags/svg/rounded/${lang.flag}.svg`}
+                    src={`/assets/policy_pro/images/flags/svg/rounded/${lang.flag}.svg`}
                     alt={lang.value}
                   />
                   <span className="block truncate">{lang.label}</span>

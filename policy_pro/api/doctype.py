@@ -1,6 +1,6 @@
 import frappe
 import json
-from erptech_rcm.api.utils import create_response
+from policy_pro.api.utils import create_response
 
 @frappe.whitelist()
 def list_info():

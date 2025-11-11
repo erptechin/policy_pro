@@ -148,6 +148,7 @@ export default function AddEditFrom() {
       getListData({
         doctype: "User",
         fields: JSON.stringify(["name", "full_name", "email"]),
+        filters: JSON.stringify([["role_profile_name", "=", "Lead Manager"]]),
         page_length: 100
       }).then((res) => {
         if (res?.data) {
