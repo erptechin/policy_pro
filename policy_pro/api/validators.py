@@ -14,8 +14,7 @@ class LeadValidator:
     def validate_mandatory_fields(doc):
         """Validate required fields for Lead"""
         mandatory_fields = {
-            'lead_name': _('Lead Name'),
-            'company_name': _('Company Name')
+            'lead_name': _('Lead Name')
         }
 
         for field, label in mandatory_fields.items():

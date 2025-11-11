@@ -106,7 +106,7 @@ export default function General() {
               register={register}
               control={control}
               errors={errors}
-              tables={{}}
+              tables={{ignorFields: {}}}
             />
           </div>
           <div className="space-y-4">
@@ -116,7 +116,7 @@ export default function General() {
               register={register}
               control={control}
               errors={errors}
-              tables={{}}
+              tables={{ignorFields: {}}}
             />
           </div>
         </div>

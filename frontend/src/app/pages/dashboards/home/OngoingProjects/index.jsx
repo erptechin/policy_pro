@@ -7,7 +7,7 @@ import { useInfo, useFeachData } from "hooks/useApiHook";
 // ----------------------------------------------------------------------
 
 const doctype = "Lead"
-const fields = ['lead_name', 'status', 'source', 'email', 'phone', 'company_name']
+const fields = ['lead_name', 'status', 'source', 'email_id', 'mobile_no']
 
 export function OngoingProjects() {
   const navigate = useNavigate();

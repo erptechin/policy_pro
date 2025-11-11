@@ -10,14 +10,13 @@ import { Avatar, Card } from "components/ui";
 export function ProjectCard({
   id,
   lead_name,
-  company_name,
   status,
   source,
   email,
   phone,
   color = "primary"
 }) {
-  const displayName = lead_name || company_name || id;
+  const displayName = lead_name || id;
   
   return (
     <Card className="p-3">
@@ -34,12 +33,8 @@ export function ProjectCard({
             </p>
           </div>
           <div className="mt-0.5 flex text-xs text-gray-400 dark:text-dark-300">
-            {company_name && <p>{company_name}</p>}
             {status && (
-              <>
-                {company_name && <div className="mx-2 my-1 hidden w-px bg-gray-200 dark:bg-dark-500 sm:flex"></div>}
-                <p className="hidden sm:flex">{status}</p>
-              </>
+              <p className="hidden sm:flex">{status}</p>
             )}
           </div>
         </div>
@@ -61,7 +56,6 @@ export function ProjectCard({
 ProjectCard.propTypes = {
   id: PropTypes.string,
   lead_name: PropTypes.string,
-  company_name: PropTypes.string,
   status: PropTypes.string,
   source: PropTypes.string,
   email: PropTypes.string,

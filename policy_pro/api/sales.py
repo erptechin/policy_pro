@@ -48,7 +48,7 @@ def get_leads(status=None, owner=None, page=1, limit=20, filters=None):
             filters=filter_conditions,
             fields=[
                 'name', 'lead_name', 'email_id', 'mobile_no', 'status', 'owner',
-                'company_name', 'source', 'creation', 'modified',
+                'source', 'creation', 'modified',
                 'custom_call_back_date', 'custom_call_back_time', 'custom_call_back_notes'
             ],
             limit_page_length=int(limit),
@@ -105,13 +105,12 @@ def get_lead(lead_id):
 
 
 @frappe.whitelist()
-def create_lead(lead_name, company_name, email_id=None, mobile_no=None, **kwargs):
+def create_lead(lead_name, email_id=None, mobile_no=None, **kwargs):
     """
     Create a new lead
 
     Args:
         lead_name (str): Customer name (mandatory)
-        company_name (str): Company name (mandatory)
         email_id (str): Email address
         mobile_no (str): Phone number
         **kwargs: Additional fields
@@ -121,13 +120,6 @@ def create_lead(lead_name, company_name, email_id=None, mobile_no=None, **kwargs
     """
     try:
         # Validate mandatory fields
-        if not lead_name or not company_name:
-            return {
-                'status': 'error',
-                'message': _('Lead Name and Company Name are mandatory'),
-                'code': 400
-            }
-
         if not email_id and not mobile_no:
             return {
                 'status': 'error',
@@ -139,7 +131,6 @@ def create_lead(lead_name, company_name, email_id=None, mobile_no=None, **kwargs
         lead = frappe.get_doc({
             'doctype': 'Lead',
             'lead_name': lead_name,
-            'company_name': company_name,
             'email_id': email_id,
             'mobile_no': mobile_no,
             'status': 'Open',
@@ -270,7 +261,7 @@ def get_won_leads():
         leads = frappe.get_all(
             'Lead',
             filters={'status': ['in', ['Converted', 'Won']]},
-            fields=['name', 'lead_name', 'status', 'owner', 'email_id', 'mobile_no', 'company_name'],
+            fields=['name', 'lead_name', 'status', 'owner', 'email_id', 'mobile_no'],
             order_by='modified desc'
         )
 
@@ -602,7 +593,6 @@ def create_lead_from_website(lead_data):
         lead = frappe.get_doc({
             'doctype': 'Lead',
             'lead_name': lead_data.get('name') or lead_data.get('lead_name'),
-            'company_name': lead_data.get('company_name', ''),
             'email_id': lead_data.get('email'),
             'mobile_no': lead_data.get('phone') or lead_data.get('mobile_no'),
             'status': 'Open',
@@ -611,7 +601,7 @@ def create_lead_from_website(lead_data):
 
         # Add any additional fields
         for key, value in lead_data.items():
-            if key not in ['name', 'lead_name', 'company_name', 'email', 'phone', 'mobile_no', 'source']:
+            if key not in ['name', 'lead_name', 'email', 'phone', 'mobile_no', 'source']:
                 if hasattr(lead, key):
                     setattr(lead, key, value)
 

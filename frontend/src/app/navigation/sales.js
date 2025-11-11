@@ -23,6 +23,22 @@ export const sales = {
             Icon: StatisticIcon,
         },
         {
+            id: 'sales.employee',
+            path: path(ROOT_MASTERS, '/employee'),
+            type: NAV_TYPE_ITEM,
+            title: 'Employee',
+            transKey: 'nav.sales.employee',
+            Icon: StatisticIcon,
+        },
+        {
+            id: 'sales.leads',
+            path: path(ROOT_MASTERS, '/leads'),
+            type: NAV_TYPE_ITEM,
+            title: 'Leads',
+            transKey: 'nav.sales.leads',
+            Icon: StatisticIcon,
+        },
+        {
             id: 'sales.sales-order',
             path: path(ROOT_MASTERS, '/sales-order'),
             type: NAV_TYPE_ITEM,

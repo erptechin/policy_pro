@@ -1,15 +1,9 @@
-import { dashboards } from "./home";
-import { lead } from "./lead";
-import { customer } from "./customer";
-import { salesOrder } from "./sales-order";
-import { users } from "./users";
+import { dashboards } from "./dashboards";
+import { sales } from "./sales";
 
 export const navigation = [
     dashboards,
-    lead,
-    customer,
-    salesOrder,
-    // users,
+    sales
 ]
 
 export { baseNavigation } from './baseNavigation'
