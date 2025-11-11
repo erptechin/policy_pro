@@ -1,10 +1,10 @@
 // Import Dependencies
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useNavigate, useParams } from "react-router";
 import { Skeleton } from "components/ui";
 import { useThemeContext } from "app/contexts/theme/context";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Controller, useForm, useWatch } from "react-hook-form";
+import {  useForm } from "react-hook-form";
 import { DocumentPlusIcon } from "@heroicons/react/24/outline";
 
 // Local Imports
@@ -16,8 +16,8 @@ import { useInfo, useAddData, useFeachSingle, useUpdateData } from "hooks/useApi
 
 const pageName = "Employee"
 const doctype = "Employee"
-const fields = ['employee_name', 'designation', 'department', 'custom_employee_image']
-const subFields = ['user_id', 'status']
+const fields = ['employee_name', 'designation', 'department']
+const subFields = ['user_id', 'status', 'custom_employee_image']
 
 const tableFields = {
   "ignorFields": {}

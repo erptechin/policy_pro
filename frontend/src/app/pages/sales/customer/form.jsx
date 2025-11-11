@@ -16,8 +16,8 @@ import { useInfo, useAddData, useFeachSingle, useUpdateData } from "hooks/useApi
 
 const pageName = "Customer List"
 const doctype = "Customer"
-const fields = ['customer_name', 'customer_type', 'custom_customer_image']
-const subFields = ['customer_primary_address']
+const fields = ['customer_name', 'customer_type']
+const subFields = ['customer_primary_address', 'custom_customer_image']
 
 const tableFields = {
   "customer_site_addresses": { "title": true, "address": true },

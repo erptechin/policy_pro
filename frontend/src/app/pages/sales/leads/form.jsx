@@ -70,7 +70,7 @@ const subFields = [
 ]
 
 const tableFields = {
-  "ignorFields": { custom_followup_history: true, cod_documents: true },
+  "ignorFields": { status: true, custom_followup_history: true, cod_documents: true },
 }
 
 // ----------------------------------------------------------------------
@@ -104,9 +104,11 @@ export default function AddEditFrom() {
     reset,
     setValue,
   } = useForm({
-    resolver: yupResolver(Schema(info?.fields)),
+    resolver: yupResolver(Schema(info?.fields, ['status'])),
     values: id ? data : {},
   });
+
+  console.log(errors);
 
   const [showCEOApprovalModal, setShowCEOApprovalModal] = useState(false);
   const [ceoApprovalData, setCeoApprovalData] = useState({
