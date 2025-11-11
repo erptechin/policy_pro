@@ -1,9 +1,9 @@
 import { NAV_TYPE_ITEM, } from "constants/app.constant";
 import DashboardsIcon from 'assets/dualicons/dashboards.svg?react'
-import PeoplePlusIcon from 'assets/nav-icons/people-plus.svg?react'
-import PeopleIcon from 'assets/nav-icons/people.svg?react'
-import ShoppingCartIcon from 'assets/nav-icons/shopping-cart.svg?react'
 import UserIcon from 'assets/nav-icons/user.svg?react'
+import PeopleMonitorIcon from 'assets/nav-icons/people-monitor.svg?react'
+import MegaphoneIcon from 'assets/nav-icons/megaphone.svg?react'
+import OrderTimerIcon from 'assets/nav-icons/order-timer.svg?react'
 
 export const baseNavigation = [
     {
@@ -15,20 +15,28 @@ export const baseNavigation = [
         Icon: DashboardsIcon,
     },
     {
-        id: 'lead',
-        type: NAV_TYPE_ITEM,
-        path: '/dashboards/lead/add-new',
-        title: 'Add Lead',
-        transKey: 'nav.lead.lead',
-        Icon: PeoplePlusIcon,
-    },
-    {
         id: 'customer',
         type: NAV_TYPE_ITEM,
         path: '/sales/customer',
         title: 'Customer',
         transKey: 'nav.sales.customer',
-        Icon: PeopleIcon,
+        Icon: UserIcon,
+    },
+    {
+        id: 'employee',
+        type: NAV_TYPE_ITEM,
+        path: '/sales/employee',
+        title: 'Employee',
+        transKey: 'nav.sales.employee',
+        Icon: PeopleMonitorIcon,
+    },
+    {
+        id: 'leads',
+        type: NAV_TYPE_ITEM,
+        path: '/sales/leads',
+        title: 'Leads',
+        transKey: 'nav.sales.leads',
+        Icon: MegaphoneIcon,
     },
     {
         id: 'sales-order',
@@ -36,14 +44,6 @@ export const baseNavigation = [
         path: '/sales/sales-order',
         title: 'Sales Order',
         transKey: 'nav.sales.sales-order',
-        Icon: ShoppingCartIcon,
-    },
-    {
-        id: 'users',
-        type: NAV_TYPE_ITEM,
-        path: '/dashboards/users',
-        title: 'Users',
-        transKey: 'nav.users.users',
-        Icon: UserIcon,
+        Icon: OrderTimerIcon,
     }
 ]

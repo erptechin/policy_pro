@@ -187,6 +187,14 @@
       "attributions": "Atribuciones",
       "changelogs": "Registro de cambios"
     },
+    "sales": {
+      "sales": "Ventas",
+      "customer": "Cliente",
+      "employee": "Empleado",
+      "leads": "Oportunidades",
+      "sales-order": "Orden de Venta",
+      "sales-invoice": "Factura de Venta"
+    },
     "settings": {
       "settings": "Configuración",
       "general": "General",

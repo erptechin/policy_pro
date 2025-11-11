@@ -187,6 +187,14 @@
       "attributions": "الإسنادات",
       "changelogs": "سجل التغيير"
     },
+    "sales": {
+      "sales": "المبيعات",
+      "customer": "العميل",
+      "employee": "الموظف",
+      "leads": "الفرص",
+      "sales-order": "أمر البيع",
+      "sales-invoice": "فاتورة البيع"
+    },
     "settings": {
       "settings": "الإعدادات",
       "general": "عام",

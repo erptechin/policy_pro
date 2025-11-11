@@ -1,5 +1,8 @@
 import DualFormsIcon from 'assets/dualicons/forms.svg?react'
-import StatisticIcon from 'assets/nav-icons/statistic.svg?react'
+import UserIcon from 'assets/nav-icons/user.svg?react'
+import PeopleMonitorIcon from 'assets/nav-icons/people-monitor.svg?react'
+import MegaphoneIcon from 'assets/nav-icons/megaphone.svg?react'
+import OrderTimerIcon from 'assets/nav-icons/order-timer.svg?react'
 import { NAV_TYPE_ROOT, NAV_TYPE_ITEM } from 'constants/app.constant'
 
 const ROOT_MASTERS = '/sales'
@@ -20,7 +23,7 @@ export const sales = {
             type: NAV_TYPE_ITEM,
             title: 'Customer',
             transKey: 'nav.sales.customer',
-            Icon: StatisticIcon,
+            Icon: UserIcon,
         },
         {
             id: 'sales.employee',
@@ -28,7 +31,7 @@ export const sales = {
             type: NAV_TYPE_ITEM,
             title: 'Employee',
             transKey: 'nav.sales.employee',
-            Icon: StatisticIcon,
+            Icon: PeopleMonitorIcon,
         },
         {
             id: 'sales.leads',
@@ -36,7 +39,7 @@ export const sales = {
             type: NAV_TYPE_ITEM,
             title: 'Leads',
             transKey: 'nav.sales.leads',
-            Icon: StatisticIcon,
+            Icon: MegaphoneIcon,
         },
         {
             id: 'sales.sales-order',
@@ -44,7 +47,7 @@ export const sales = {
             type: NAV_TYPE_ITEM,
             title: 'Sales Order',
             transKey: 'nav.sales.sales-order',
-            Icon: StatisticIcon,
+            Icon: OrderTimerIcon,
         },
     ]
 }
