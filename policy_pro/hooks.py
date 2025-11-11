@@ -118,10 +118,6 @@ after_app_install = "policy_pro.utils.after_app_install.after_app_install"
 # -----------
 # Permissions evaluated in scripted ways
 
-permission_query_conditions = {
-	"Lead": "policy_pro.api.lead_hooks.get_lead_permission_query_conditions",
-}
-
 # DocType Class
 # ---------------
 # Override standard doctype classes
@@ -136,9 +132,7 @@ permission_query_conditions = {
 
 doc_events = {
 	"Lead": {
-		"validate": "policy_pro.api.lead_hooks.validate_lead",
-		"on_insert": "policy_pro.api.lead_hooks.on_insert_lead",
-		"on_update": "policy_pro.api.lead_hooks.on_update_lead",
+		"on_update": "policy_pro.api.hooks.on_update_lead"
 	},
 	"COD Document": {
 		"validate": "policy_pro.api.cod_hooks.validate_cod_document",

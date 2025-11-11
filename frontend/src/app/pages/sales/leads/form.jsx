@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router";
 import { Skeleton } from "components/ui";
 import { useThemeContext } from "app/contexts/theme/context";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Controller, useForm, useWatch } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { DocumentPlusIcon } from "@heroicons/react/24/outline";
 
 // Local Imports
@@ -18,9 +18,7 @@ const pageName = "Lead"
 const doctype = "Lead"
 
 const fields = [
-  'lead_name',
-  'status',
-  'source',
+  'first_name',
   'email',
   'mobile_no',
   'custom_car_year',
@@ -37,6 +35,8 @@ const fields = [
 ]
 
 const subFields = [
+  'custom_lead_status',
+  'source',
   'custom_call_back_date',
   'custom_call_back_time',
   'custom_call_back_notes',
@@ -90,7 +90,7 @@ export default function AddEditFrom() {
     if (id) {
       mutationUpdate.mutate({ doctype, body: { ...data, id } })
     } else {
-      mutationAdd.mutate({ doctype, body: data })
+      mutationAdd.mutate({ doctype, body: { ...data, status: "Open" } })
     }
   };
 
@@ -137,7 +137,7 @@ export default function AddEditFrom() {
           id="new-post-form"
         >
           <div className="grid grid-cols-12 place-content-start gap-4 sm:gap-5 lg:gap-6">
-            <div className="col-span-12 lg:col-span-8">
+            <div className="col-span-12 lg:col-span-7">
               <Card className="p-4 sm:px-5">
                 <div className="mt-5 space-y-5">
                   <DynamicForms
@@ -151,7 +151,7 @@ export default function AddEditFrom() {
                 </div>
               </Card>
             </div>
-            <div className="col-span-12 space-y-4 sm:space-y-5 lg:col-span-4 lg:space-y-6">
+            <div className="col-span-12 space-y-4 sm:space-y-5 lg:col-span-5 lg:space-y-6">
               <Card className="p-4 sm:px-5">
                 <DynamicForms
                   infos={info}
