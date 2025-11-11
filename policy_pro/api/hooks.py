@@ -11,3 +11,11 @@ def on_update_lead(doc, method):
         except Exception as e:
             user_name = frappe.session.user if frappe.session.user else "Unknown"
             frappe.log_error(f"Error adding share for user {user_name} to Lead {doc.name}: {str(e)}")
+
+    if doc.name and doc.get("custom_lead_status") == "CEO Approval":
+        try:
+            user = frappe.get_doc("User", doc.custom_assigned_user)
+            add_share("Lead", doc.name, user.name, write=1, share=1)
+            frappe.msgprint(frappe._("Lead access has been granted to {0}").format(user.name))
+        except Exception as e:
+            frappe.log_error(f"Error adding share for user {doc.custom_assigned_user} to Lead {doc.name}: {str(e)}")

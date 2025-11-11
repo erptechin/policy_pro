@@ -1,5 +1,5 @@
 // Import Dependencies
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
 import { Skeleton } from "components/ui";
 import { useThemeContext } from "app/contexts/theme/context";
@@ -20,6 +20,17 @@ import DynamicForms from 'app/components/form/dynamicForms';
 import { useInfo, useAddData, useFeachSingle, useUpdateData } from "hooks/useApiHook";
 import FollowUpHistory from './FollowUpHistory';
 import CODDocuments from './CODDocuments';
+import { getListData } from 'utils/apis';
+import {
+  Combobox,
+  ComboboxButton,
+  ComboboxInput,
+  ComboboxOption,
+  ComboboxOptions
+} from "@headlessui/react";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import { Input } from "components/ui";
+import clsx from "clsx";
 
 const pageName = "Lead"
 const doctype = "Lead"
@@ -99,27 +110,76 @@ export default function AddEditFrom() {
 
   const [showCEOApprovalModal, setShowCEOApprovalModal] = useState(false);
   const [ceoApprovalData, setCeoApprovalData] = useState({
-    comments: "",
-    priority: "",
-    requested_date: new Date().toISOString().split("T")[0]
+    custom_assigned_user: "",
   });
+  const [userQuery, setUserQuery] = useState("");
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+
+  // Required document types
+  const requiredDocumentTypes = [
+    "Car Mulkiya",
+    "Driving License",
+    "Emirates ID",
+    "Invoice",
+    "Credit Note",
+    "Debit Note",
+    "Car Passing"
+  ];
+
+  // Check if all required document types are uploaded
+  const checkAllDocumentsUploaded = () => {
+    if (!data?.cod_documents || data.cod_documents.length === 0) {
+      return false;
+    }
+    const uploadedTypes = data.cod_documents
+      .map(doc => doc.document_type)
+      .filter(type => type && type.trim() !== "");
+    return requiredDocumentTypes.every(type => uploadedTypes.includes(type));
+  };
+
+  const allDocumentsUploaded = checkAllDocumentsUploaded();
+
+  // Fetch users when modal opens
+  useEffect(() => {
+    if (showCEOApprovalModal) {
+      getListData({
+        doctype: "User",
+        fields: JSON.stringify(["name", "full_name", "email"]),
+        page_length: 100
+      }).then((res) => {
+        if (res?.data) {
+          setUsers(res.data.map(user => ({
+            label: user.full_name || user.name,
+            value: user.name,
+            email: user.email
+          })));
+        }
+      });
+    }
+  }, [showCEOApprovalModal]);
+
+  const filteredUsers = userQuery === ""
+    ? users
+    : users.filter((user) =>
+      user.label.toLowerCase().replace(/\s+/g, "").includes(userQuery.toLowerCase().replace(/\s+/g, "")) ||
+      user.email?.toLowerCase().includes(userQuery.toLowerCase())
+    );
 
   const handleCEOApprovalSubmit = () => {
-    if (id && ceoApprovalData.comments && ceoApprovalData.comments.trim()) {
+    if (id && allDocumentsUploaded) {
       const submitData = {
         id,
-        status: "CEO Approval",
-        custom_ceo_approval_comments: ceoApprovalData.comments,
-        custom_ceo_approval_priority: ceoApprovalData.priority,
-        custom_ceo_approval_requested_date: ceoApprovalData.requested_date
+        custom_assigned_user: ceoApprovalData.custom_assigned_user,
+        custom_lead_status: "CEO Approval"
       };
       mutationUpdate.mutate({ doctype, body: submitData });
       setShowCEOApprovalModal(false);
       setCeoApprovalData({
-        comments: "",
-        priority: "",
-        requested_date: new Date().toISOString().split("T")[0]
+        custom_assigned_user: "",
       });
+      setSelectedUser(null);
+      setUserQuery("");
     }
   };
 
@@ -189,17 +249,17 @@ export default function AddEditFrom() {
           id="new-post-form"
         >
           <div className="grid grid-cols-12 place-content-start gap-4 sm:gap-5 lg:gap-6">
-            <CODDocuments 
-              id={id} 
-              data={data} 
-              setValue={setValue} 
-              refetchData={refetchData} 
+            <CODDocuments
+              id={id}
+              data={data}
+              setValue={setValue}
+              refetchData={refetchData}
             />
-            <FollowUpHistory 
-              id={id} 
-              data={data} 
-              setValue={setValue} 
-              refetchData={refetchData} 
+            <FollowUpHistory
+              id={id}
+              data={data}
+              setValue={setValue}
+              refetchData={refetchData}
             />
 
             <div className="col-span-12 lg:col-span-7">
@@ -271,48 +331,107 @@ export default function AddEditFrom() {
               {/* Content */}
               <div className="flex-1 overflow-y-auto p-5">
                 <div className="space-y-4">
-                  <div>
-                    <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-dark-100">
-                      Comments <span className="text-red-500">*</span>
-                    </label>
-                    <textarea
-                      value={ceoApprovalData.comments}
-                      onChange={(e) => setCeoApprovalData({ ...ceoApprovalData, comments: e.target.value })}
-                      placeholder="Enter comments for CEO approval..."
-                      rows="4"
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 dark:border-dark-400 dark:bg-dark-500 dark:text-dark-50"
-                      required
-                    />
-                  </div>
 
                   <div>
                     <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-dark-100">
-                      Priority
+                      Assign User
                     </label>
-                    <select
-                      value={ceoApprovalData.priority}
-                      onChange={(e) => setCeoApprovalData({ ...ceoApprovalData, priority: e.target.value })}
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 dark:border-dark-400 dark:bg-dark-500 dark:text-dark-50"
+                    <Combobox
+                      value={selectedUser}
+                      onChange={(user) => {
+                        setSelectedUser(user);
+                        setCeoApprovalData({ ...ceoApprovalData, custom_assigned_user: user?.value || "" });
+                      }}
                     >
-                      <option value="">Select Priority</option>
-                      <option value="Low">Low</option>
-                      <option value="Medium">Medium</option>
-                      <option value="High">High</option>
-                      <option value="Urgent">Urgent</option>
-                    </select>
+                      {({ open }) => (
+                        <div className="relative">
+                          <div className="relative w-full cursor-pointer overflow-hidden">
+                            <ComboboxInput
+                              as={Input}
+                              autoComplete="off"
+                              displayValue={(user) => user?.label || ""}
+                              onChange={(event) => setUserQuery(event.target.value)}
+                              placeholder="Select User"
+                              suffix={
+                                <ComboboxButton>
+                                  <ChevronDownIcon
+                                    className={clsx(
+                                      "size-5 transition-transform",
+                                      open && "rotate-180",
+                                    )}
+                                    aria-hidden="true"
+                                  />
+                                </ComboboxButton>
+                              }
+                            />
+                          </div>
+                          <Transition
+                            as="div"
+                            enter="transition ease-out"
+                            enterFrom="opacity-0 translate-y-2"
+                            enterTo="opacity-100 translate-y-0"
+                            leave="transition ease-in"
+                            leaveFrom="opacity-100 translate-y-0"
+                            leaveTo="opacity-0 translate-y-2"
+                            afterLeave={() => setUserQuery("")}
+                          >
+                            <ComboboxOptions className="absolute z-10 mt-1 max-h-60 w-full overflow-y-auto overflow-x-hidden rounded-lg border border-gray-300 bg-white py-1 shadow-lg shadow-gray-200/50 outline-hidden focus-visible:outline-hidden dark:border-dark-500 dark:bg-dark-750 dark:shadow-none">
+                              {filteredUsers.length === 0 && userQuery !== "" ? (
+                                <div className="relative cursor-default select-none px-4 py-2 text-gray-800 dark:text-dark-100">
+                                  Nothing found
+                                </div>
+                              ) : (
+                                filteredUsers.map((user) => (
+                                  <ComboboxOption
+                                    key={user.value}
+                                    className={({ selected, active }) =>
+                                      clsx(
+                                        "relative cursor-pointer select-none px-4 py-2 outline-hidden transition-colors",
+                                        active && !selected && "bg-gray-100 dark:bg-dark-600",
+                                        selected
+                                          ? "bg-primary-600 text-white dark:bg-primary-500"
+                                          : "text-gray-800 dark:text-dark-100",
+                                      )
+                                    }
+                                    value={user}
+                                  >
+                                    {({ selected }) => (
+                                      <div className="flex flex-col">
+                                        <span>{user.label}</span>
+                                        {user.email && (
+                                          <span className={clsx(
+                                            "text-xs",
+                                            selected
+                                              ? "text-primary-100"
+                                              : "text-gray-500 dark:text-dark-300"
+                                          )}>
+                                            {user.email}
+                                          </span>
+                                        )}
+                                      </div>
+                                    )}
+                                  </ComboboxOption>
+                                ))
+                              )}
+                            </ComboboxOptions>
+                          </Transition>
+                        </div>
+                      )}
+                    </Combobox>
                   </div>
 
-                  <div>
-                    <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-dark-100">
-                      Requested Date
-                    </label>
-                    <input
-                      type="date"
-                      value={ceoApprovalData.requested_date}
-                      onChange={(e) => setCeoApprovalData({ ...ceoApprovalData, requested_date: e.target.value })}
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 dark:border-dark-400 dark:bg-dark-500 dark:text-dark-50"
-                    />
-                  </div>
+                  {!allDocumentsUploaded && (
+                    <div className="rounded-lg bg-yellow-50 border border-yellow-200 p-3 dark:bg-yellow-900/20 dark:border-yellow-800">
+                      <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                        <strong>Warning:</strong> All required document types must be uploaded before submitting for CEO approval.
+                      </p>
+                      <p className="text-xs mt-1 text-yellow-700 dark:text-yellow-300">
+                        Missing: {requiredDocumentTypes.filter(type =>
+                          !data?.cod_documents?.some(doc => doc.document_type === type)
+                        ).join(", ")}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -323,10 +442,10 @@ export default function AddEditFrom() {
                   onClick={() => {
                     setShowCEOApprovalModal(false);
                     setCeoApprovalData({
-                      comments: "",
-                      priority: "",
-                      requested_date: new Date().toISOString().split("T")[0]
+                      custom_assigned_user: "",
                     });
+                    setSelectedUser(null);
+                    setUserQuery("");
                   }}
                 >
                   Cancel
@@ -334,7 +453,7 @@ export default function AddEditFrom() {
                 <Button
                   color="primary"
                   onClick={handleCEOApprovalSubmit}
-                  disabled={!ceoApprovalData.comments || !ceoApprovalData.comments.trim()}
+                  disabled={!allDocumentsUploaded}
                 >
                   Submit For Approval
                 </Button>
