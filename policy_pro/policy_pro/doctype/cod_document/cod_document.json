@@ -1,5 +1,7 @@
 {
- "creation": "2025-01-15 10:00:00.000000",
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2025-11-12 00:17:35.348602",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
@@ -47,16 +49,21 @@
    "label": "Comments"
   }
  ],
+ "grid_page_length": 50,
  "index_web_pages_for_search": 0,
  "istable": 1,
- "modified": "2025-01-15 10:00:00.000000",
+ "links": [],
+ "modified": "2025-11-12 00:17:45.875008",
  "modified_by": "Administrator",
  "module": "Policy Pro",
- "name": "COD Document Item",
+ "name": "COD Document",
  "owner": "Administrator",
  "permissions": [],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 0,
+ "track_seen": 0,
+ "track_views": 0
 }
-
