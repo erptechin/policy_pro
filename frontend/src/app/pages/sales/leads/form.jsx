@@ -16,7 +16,9 @@ import { useInfo, useAddData, useFeachSingle, useUpdateData } from "hooks/useApi
 
 const pageName = "Lead"
 const doctype = "Lead"
+
 const fields = ['lead_name', 'status', 'source', 'email', 'mobile_no']
+const subFields = ['custom_call_back_date', 'custom_call_back_time', 'custom_call_back_notes']
 
 const tableFields = {
   "ignorFields": {}
@@ -24,16 +26,12 @@ const tableFields = {
 
 // ----------------------------------------------------------------------
 
-const initialState = Object.fromEntries(
-  fields.map(field => [field, ""])
-);
-
 export default function AddEditFrom() {
   const { isDark, darkColorScheme, lightColorScheme } = useThemeContext();
   const navigate = useNavigate();
   const { id } = useParams();
-  const { data: info, isFetching: isFetchingInfo } = useInfo({ doctype, fields: JSON.stringify(fields) });
-  const { data, isFetching: isFetchingData } = useFeachSingle({ doctype, id, fields: JSON.stringify(fields) });
+  const { data: info, isFetching: isFetchingInfo } = useInfo({ doctype, fields: JSON.stringify([...fields, ...subFields]) });
+  const { data, isFetching: isFetchingData } = useFeachSingle({ doctype, id, fields: JSON.stringify([...fields, ...subFields]) });
 
   const mutationAdd = useAddData((data) => {
     if (data) {
@@ -57,7 +55,7 @@ export default function AddEditFrom() {
     reset,
   } = useForm({
     resolver: yupResolver(Schema(info?.fields)),
-    values: id ? data : initialState,
+    values: id ? data : {},
   });
 
   const onSubmit = (data) => {
@@ -123,6 +121,18 @@ export default function AddEditFrom() {
                     errors={errors}
                   />
                 </div>
+              </Card>
+            </div>
+            <div className="col-span-12 space-y-4 sm:space-y-5 lg:col-span-4 lg:space-y-6">
+              <Card className="p-4 sm:px-5">
+                <DynamicForms
+                  infos={info}
+                  tables={tableFields}
+                  fields={subFields}
+                  register={register}
+                  control={control}
+                  errors={errors}
+                />
               </Card>
             </div>
           </div>
