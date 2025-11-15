@@ -115,6 +115,7 @@ export default function AddEditFrom() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [ceoApprovalData, setCeoApprovalData] = useState({
     custom_assigned_user: "",
+    custom_policy_number: "",
   });
   const [userQuery, setUserQuery] = useState("");
   const [users, setUsers] = useState([]);
@@ -147,6 +148,13 @@ export default function AddEditFrom() {
   // Fetch users when modal opens
   useEffect(() => {
     if (showCEOApprovalModal) {
+      // Pre-populate policy number if it exists
+      if (data?.custom_policy_number) {
+        setCeoApprovalData(prev => ({
+          ...prev,
+          custom_policy_number: data.custom_policy_number || "",
+        }));
+      }
       getListData({
         doctype: "User",
         fields: JSON.stringify(["name", "full_name", "email"]),
@@ -162,7 +170,7 @@ export default function AddEditFrom() {
         }
       });
     }
-  }, [showCEOApprovalModal]);
+  }, [showCEOApprovalModal, data?.custom_policy_number]);
 
   const filteredUsers = userQuery === ""
     ? users
@@ -176,12 +184,14 @@ export default function AddEditFrom() {
       const submitData = {
         id,
         custom_assigned_user: ceoApprovalData.custom_assigned_user,
+        custom_policy_number: ceoApprovalData.custom_policy_number,
         custom_lead_status: "CEO Approval"
       };
       mutationUpdate.mutate({ doctype, body: submitData });
       setShowCEOApprovalModal(false);
       setCeoApprovalData({
         custom_assigned_user: "",
+        custom_policy_number: "",
       });
       setSelectedUser(null);
       setUserQuery("");
@@ -456,6 +466,19 @@ export default function AddEditFrom() {
                     </Combobox>
                   </div>
 
+                  <div>
+                    <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-dark-100">
+                      Policy Number
+                    </label>
+                    <Input
+                      type="text"
+                      value={ceoApprovalData.custom_policy_number}
+                      onChange={(e) => setCeoApprovalData({ ...ceoApprovalData, custom_policy_number: e.target.value })}
+                      placeholder="Enter Policy Number"
+                      autoComplete="off"
+                    />
+                  </div>
+
                   {!allDocumentsUploaded && (
                     <div className="rounded-lg bg-yellow-50 border border-yellow-200 p-3 dark:bg-yellow-900/20 dark:border-yellow-800">
                       <p className="text-sm text-yellow-800 dark:text-yellow-200">
@@ -479,6 +502,7 @@ export default function AddEditFrom() {
                     setShowCEOApprovalModal(false);
                     setCeoApprovalData({
                       custom_assigned_user: "",
+                      custom_policy_number: "",
                     });
                     setSelectedUser(null);
                     setUserQuery("");

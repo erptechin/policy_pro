@@ -19,7 +19,7 @@ import { useAuthContext } from "app/contexts/auth/context";
 
 const pageName = "Sales Order List"
 const doctype = "Sales Order"
-const fields_list = ['customer', 'custom_lead', 'items']
+const fields_list = ['customer', 'custom_agent', 'custom_lead', 'items']
 const subFields = ['delivery_date']
 
 const tableFields = {
