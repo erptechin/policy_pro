@@ -11,6 +11,8 @@ import { Page } from "components/shared/Page";
 import { Button, Card } from "components/ui";
 import DynamicForms from 'app/components/form/dynamicForms';
 import { useInfo, useAddData, useFeachSingle, useUpdateData } from "hooks/useApiHook";
+import { useDisclosure } from "hooks";
+import { ChangePasswordModal } from "../../../components/ChangePasswordModal";
 
 const pageName = "COD Manager"
 const doctype = "User"
@@ -33,6 +35,7 @@ const tableFields = {
 export default function AddEditFrom() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [isPasswordModalOpen, { open: openPasswordModal, close: closePasswordModal }] = useDisclosure(false);
 
   const { data: info, isLoading: infoLoading } = useInfo({ doctype, fields: JSON.stringify([...fields, ...subFields]) });
   const { data, isLoading: dataLoading, refetch: refetchData } = useFeachSingle({ doctype, id, fields: JSON.stringify([...fields, ...subFields]) });
@@ -91,6 +94,15 @@ export default function AddEditFrom() {
             </h2>
           </div>
           <div className="flex gap-2">
+            {id && (
+              <Button
+                className="min-w-[7rem]"
+                variant="outlined"
+                onClick={openPasswordModal}
+              >
+                Change Password
+              </Button>
+            )}
             <Button
               className="min-w-[7rem]"
               variant="outlined"
@@ -143,6 +155,13 @@ export default function AddEditFrom() {
             </div>
           </div>
         </form>
+
+        <ChangePasswordModal
+          isOpen={isPasswordModalOpen}
+          onClose={closePasswordModal}
+          userId={id}
+          doctype={doctype}
+        />
       </div>
     </Page>
   );
