@@ -25,18 +25,6 @@ const columnHelper = createColumnHelper();
 
 export function Columns(fields = [], fields_order = [], isPrint = false) {
     let returnColumns = []
-    // Sort fields based on fields_order array
-    // const sortedFields = [...fields].sort((a, b) => {
-    //     const indexA = fields_order.indexOf(a.idx);
-    //     const indexB = fields_order.indexOf(b.idx);
-
-    //     // If field is not in fields_order, put it at the end
-    //     if (indexA === -1) return 1;
-    //     if (indexB === -1) return -1;
-
-    //     return indexA - indexB;
-    // });
-
     // Check box
     returnColumns.push(columnHelper.display({
         id: "select",

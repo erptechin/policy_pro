@@ -7,6 +7,7 @@ import {
   Transition,
 } from "@headlessui/react";
 import { EllipsisHorizontalIcon } from "@heroicons/react/20/solid";
+import { useAuthContext } from "app/contexts/auth/context";
 import {
   ArrowUpTrayIcon,
   PrinterIcon,
@@ -30,6 +31,8 @@ export function SelectedRowsActions({ table }) {
   const selectedRows = table.getSelectedRowModel().rows;
   const [deleteSuccess, setDeleteSuccess] = useState(false);
   const [deleteError, setDeleteError] = useState(false);
+  const { user: { user_roles } } = useAuthContext();
+  const role = user_roles[doctype];
 
   const mutation = useDeleteData((data) => {
     if (data && data.success) {
@@ -72,6 +75,7 @@ export function SelectedRowsActions({ table }) {
 
   const state = deleteError ? "error" : deleteSuccess ? "success" : "pending";
 
+
   return (
     <>
       <Transition
@@ -95,6 +99,7 @@ export function SelectedRowsActions({ table }) {
                 </span>
               </p>
               <div className="flex space-x-1.5 ">
+                {role?.delete == 1 && (
                 <Button
                   onClick={openModal}
                   className="w-7 space-x-1.5 rounded-full px-3 py-1.5 text-xs-plus sm:w-auto sm:rounded-sm "
@@ -113,10 +118,13 @@ export function SelectedRowsActions({ table }) {
                   )}
                   <span className="max-sm:hidden">Delete</span>
                 </Button>
+                )}
+                {role?.print == 1 && (
                 <Button className="w-7 space-x-1.5 rounded-full px-3 py-1.5 text-xs-plus sm:w-auto sm:rounded-sm ">
                   <PrinterIcon className="size-4 shrink-0" />
                   <span className="max-sm:hidden">Print</span>
                 </Button>
+                )}
                 <Menu as="div" className="relative inline-block text-left">
                   <MenuButton
                     as={Button}

@@ -86,7 +86,7 @@ export function DataTable({
 
   const table = useReactTable({
     data: data,
-    columns: Columns(info?.fields, [], isPrint, showPrint, showOnlyPrint),
+    columns: Columns(info?.fields, [], isPrint, showPrint, showOnlyPrint, role),
     doctype,
     state: {
       globalFilter,
@@ -133,6 +133,7 @@ export function DataTable({
 
   useDidUpdate(() => table.resetRowSelection(), [data]);
   useLockScrollbar(tableSettings.enableFullScreen);
+
 
   return (
     <Page title={pageName}>
@@ -300,7 +301,7 @@ export function DataTable({
                 </TBody>
               </Table>
             </div>
-            <SelectedRowsActions table={table} />
+            <SelectedRowsActions table={table} role={role} />
             {table.getCoreRowModel().rows.length > 0 && (
               <div
                 className={clsx(

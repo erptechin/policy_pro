@@ -21,15 +21,18 @@ import PropTypes from "prop-types";
 import { ConfirmModal } from "components/shared/ConfirmModal";
 import { Button } from "components/ui";
 import { useDeleteData } from "hooks/useApiHook";
+import { useAuthContext } from "app/contexts/auth/context";
 // ----------------------------------------------------------------------
 
-export function RowActions({ row, table, isPrint }) {
+export function RowActions({ row, table }) {
   const navigate = useNavigate();
   const doctype = table.options.doctype
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [confirmDeleteLoading, setConfirmDeleteLoading] = useState(false);
   const [deleteSuccess, setDeleteSuccess] = useState(false);
   const [deleteError, setDeleteError] = useState(false);
+  const { user: { user_roles } } = useAuthContext();
+  const role = user_roles[doctype];
 
   const mutation = useDeleteData((data) => {
     if (data && data.success) {
@@ -104,7 +107,7 @@ export function RowActions({ row, table, isPrint }) {
                 </button>
               )}
             </MenuItem> */}
-            <MenuItem>
+            {role?.write == 1 && <MenuItem>
               {({ focus }) => (
                 <button
                   onClick={() => navigate(`edit/${row.original.id}`)}
@@ -118,8 +121,8 @@ export function RowActions({ row, table, isPrint }) {
                   <span>Edit</span>
                 </button>
               )}
-            </MenuItem>
-            <MenuItem>
+            </MenuItem>}
+            {role?.delete == 1 && <MenuItem>
               {({ focus }) => (
                 <button
                   onClick={openModal}
@@ -132,7 +135,7 @@ export function RowActions({ row, table, isPrint }) {
                   <span>Delete</span>
                 </button>
               )}
-            </MenuItem>
+            </MenuItem>}
           </Transition>
         </Menu>
       </div>
