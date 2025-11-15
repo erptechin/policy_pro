@@ -1,144 +1,140 @@
 // Import Dependencies
-import {
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuItems,
-  Transition,
-} from "@headlessui/react";
-import { EllipsisHorizontalIcon } from "@heroicons/react/20/solid";
-import { ChevronRightIcon } from "@heroicons/react/24/outline";
+import { useQuery } from "@tanstack/react-query";
 import clsx from "clsx";
-import { Fragment, useState, useEffect } from "react";
-import { useNavigate } from "react-router";
 
 // Local Imports
-import { Avatar, Button, Card } from "components/ui";
-import { useInfo, useFeachData } from "hooks/useApiHook";
+import { Card } from "components/ui";
+import { getSalesTargetSummary } from "utils/apis";
+import { useAuthContext } from "app/contexts/auth/context";
 
 // ----------------------------------------------------------------------
 
-const doctype = "Sales Order";
-const fields = ['customer', 'status', 'total', 'delivery_date', 'po_no'];
-
 export function SalesMessages() {
-  const navigate = useNavigate();
-  const [orders, setOrders] = useState([]);
+  const { isAuthenticated } = useAuthContext();
 
-  const { data: info } = useInfo({ doctype, fields: JSON.stringify(fields) });
-  const [search, setSearch] = useState({ doctype, page: 1, page_length: 5, fields: null });
-  const { data } = useFeachData(search);
+  // Fetch sales target summary data
+  const { data, isLoading } = useQuery({
+    queryKey: ["sales-target-summary"],
+    queryFn: () => getSalesTargetSummary(),
+    enabled: isAuthenticated,
+  });
 
-  useEffect(() => {
-    if (info?.fields) {
-      const fieldnames = info?.fields.map(field => field.fieldname);
-      setSearch(prev => ({ ...prev, fields: JSON.stringify([...fieldnames, "name"]) }));
+  const todayDeals = data?.todayDeals ?? 0;
+  const todayRevenue = data?.todayRevenue ?? 0;
+  const salesTargetData = data?.salesTargetData ?? [];
+
+  // Format revenue target with 'k' suffix for thousands
+  const formatRevenueTarget = (value) => {
+    if (value === 0) return "0";
+    if (value >= 1000) {
+      return `${(value / 1000).toFixed(0)}k`;
     }
-  }, [info]);
-
-  useEffect(() => {
-    if (data?.data) {
-      setOrders(data?.data);
-    }
-  }, [data]);
+    return value.toString();
+  };
 
   return (
-    <Card className="px-4 pb-4 sm:px-5">
-      <div className="flex h-14 min-w-0 items-center justify-between py-3">
-        <h2 className="font-medium tracking-wide text-gray-800 dark:text-dark-100">
-          Sales Orders
-        </h2>
-        <ActionMenu />
-      </div>
-      <div className="space-y-4">
-        {orders.map((order) => (
-          <div
-            key={order.id}
-            className="flex items-center justify-between gap-2"
-            onClick={() => navigate(`/sales/sales-order/${order.id}`)}
-            style={{ cursor: 'pointer' }}
-          >
-            <div className="flex min-w-0 items-center gap-3">
-              <Avatar
-                size={10}
-                name={order.customer || order.id}
-                initialColor="auto"
-              />
-              <div className="min-w-0">
-                <div className="flex items-center space-x-2 ">
-                  <p className="font-medium text-gray-800 dark:text-dark-100">
-                    {order.customer || order.id}
-                  </p>
-                  {order.status && (
-                    <div className="flex h-4.5 min-w-[1.125rem] items-center justify-center rounded-full bg-gray-200 px-1.5 text-tiny-plus font-medium leading-none text-gray-800 dark:bg-dark-450 dark:text-white">
-                      {order.status}
-                    </div>
-                  )}
-                </div>
-                <p className="mt-0.5 truncate text-xs text-gray-400 dark:text-dark-300">
-                  {order.total ? `Total: ${order.total}` : order.po_no || order.id}
-                </p>
-              </div>
-            </div>
-            <a
-              href="##"
-              onClick={(e) => {
-                e.preventDefault();
-                navigate(`/sales/sales-order/${order.id}`);
-              }}
-              className="hover:text-primary-600 focus:text-primary-600 dark:hover:text-primary-400 dark:focus:text-primary-400"
-            >
-              <ChevronRightIcon className="size-5 ltr:-mr-1 rtl:-ml-1 rtl:rotate-180" />
-            </a>
+    <div className="space-y-4">
+      {/* Today's Summary Cards */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {/* Today's Deals Card */}
+        <Card className="p-6 bg-blue-600 border-0">
+          <div className="text-white">
+            <p className="text-4xl font-bold mb-2">
+              {isLoading ? "..." : todayDeals}
+            </p>
+            <p className="text-sm opacity-90">Today&apos;s Deals</p>
           </div>
-        ))}
-      </div>
-    </Card>
-  );
-}
+        </Card>
 
-function ActionMenu() {
-  const navigate = useNavigate();
-  
-  return (
-    <Menu
-      as="div"
-      className="relative inline-block text-left ltr:-mr-1.5 rtl:-ml-1.5"
-    >
-      <MenuButton
-        as={Button}
-        variant="flat"
-        isIcon
-        className="size-8 rounded-full"
-      >
-        <EllipsisHorizontalIcon className="size-5" />
-      </MenuButton>
-      <Transition
-        as={Fragment}
-        enter="transition ease-out"
-        enterFrom="opacity-0 translate-y-2"
-        enterTo="opacity-100 translate-y-0"
-        leave="transition ease-in"
-        leaveFrom="opacity-100 translate-y-0"
-        leaveTo="opacity-0 translate-y-2"
-      >
-        <MenuItems className="absolute z-100 mt-1.5 min-w-[10rem] rounded-lg border border-gray-300 bg-white py-1 shadow-lg shadow-gray-200/50 outline-hidden focus-visible:outline-hidden dark:border-dark-500 dark:bg-dark-700 dark:shadow-none ltr:right-0 rtl:left-0">
-          <MenuItem>
-            {({ focus }) => (
-              <button
-                onClick={() => navigate('/sales/sales-order')}
-                className={clsx(
-                  "flex h-9 w-full items-center px-3 tracking-wide outline-hidden transition-colors",
-                  focus &&
-                    "bg-gray-100 text-gray-800 dark:bg-dark-600 dark:text-dark-100",
+        {/* Today's Revenue Card */}
+        <Card className="p-6 bg-orange-500 border-0">
+          <div className="text-white">
+            <p className="text-4xl font-bold mb-2">
+              {isLoading ? "..." : todayRevenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </p>
+            <p className="text-sm opacity-90">Today&apos;s Revenue (AED)</p>
+          </div>
+        </Card>
+      </div>
+
+      {/* Sales Target Summary Table */}
+      <Card className="p-0 overflow-hidden">
+        {/* Green Banner Header */}
+        <div className="bg-green-600 px-4 py-3 sm:px-5">
+          <h2 className="text-lg font-semibold text-white">
+            Sales Target Summary
+          </h2>
+        </div>
+
+        {/* Table */}
+        <div className="overflow-x-auto">
+          {isLoading ? (
+            <div className="text-center py-8 text-gray-500 dark:text-dark-300">
+              Loading sales target data...
+            </div>
+          ) : (
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-200 dark:border-dark-500 bg-gray-50 dark:bg-dark-800">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-dark-200 uppercase">
+                    Name
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-dark-200 uppercase">
+                    Total Deals
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-dark-200 uppercase">
+                    Sales Target
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-dark-200 uppercase">
+                    Cancellation/Refund (AED)
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-dark-200 uppercase">
+                    Revenue Mode
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-dark-200 uppercase">
+                    Revenue Target
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 dark:divide-dark-500">
+                {salesTargetData.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="px-4 py-8 text-center text-gray-500 dark:text-dark-300">
+                      No sales data available
+                    </td>
+                  </tr>
+                ) : (
+                  salesTargetData.map((agent, index) => (
+                    <tr
+                      key={agent.user_name || index}
+                      className="hover:bg-gray-50 dark:hover:bg-dark-700 transition-colors"
+                    >
+                      <td className="px-4 py-3 text-sm text-gray-800 dark:text-dark-100">
+                        {agent.name}
+                      </td>
+                      <td className="px-4 py-3 text-sm font-semibold text-blue-600 dark:text-blue-400">
+                        {agent.totalDeals}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-800 dark:text-dark-100">
+                        {agent.salesTarget}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-green-600 dark:text-green-400">
+                        {agent.cancellation.toFixed(2)}/{agent.refund.toFixed(2)}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-green-600 dark:text-green-400">
+                        {agent.revenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-green-600 dark:text-green-400">
+                        {formatRevenueTarget(agent.revenueTarget)}
+                      </td>
+                    </tr>
+                  ))
                 )}
-              >
-                <span>View All</span>
-              </button>
-            )}
-          </MenuItem>
-        </MenuItems>
-      </Transition>
-    </Menu>
+              </tbody>
+            </table>
+          )}
+        </div>
+      </Card>
+    </div>
   );
 }

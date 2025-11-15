@@ -290,3 +290,116 @@ def get_statistics():
             "Statistics Error"
         )
         create_response(500, f"Error fetching statistics: {str(e)}", None)
+
+
+@frappe.whitelist()
+def get_sales_target_summary():
+    """
+    Get sales target summary with today's deals, revenue, and detailed agent performance
+    
+    Returns:
+        dict: Sales target summary data with today's metrics and agent details
+    """
+    try:
+        from frappe.utils import today
+        
+        today_date = today()
+        
+        # Get today's deals count and revenue
+        today_orders = frappe.get_all(
+            "Sales Order",
+            filters={
+                "transaction_date": today_date,
+                "status": ["in", ["Completed", "To Deliver and Bill", "To Bill"]]
+            },
+            fields=["name", "grand_total", "total"]
+        )
+        
+        today_deals = len(today_orders)
+        today_revenue = sum(
+            float(order.grand_total or order.total or 0)
+            for order in today_orders
+        )
+        
+        # Get all Lead Users (sales agents)
+        agents = frappe.get_all(
+            "User",
+            filters={
+                "role_profile_name": "Lead User",
+                "enabled": 1
+            },
+            fields=["name", "full_name"]
+        )
+        
+        # Get all sales orders for agents
+        all_orders = frappe.get_all(
+            "Sales Order",
+            fields=["name", "custom_agent", "grand_total", "total", "status", "transaction_date"]
+        )
+        
+        # Get sales targets from User custom fields (if they exist)
+        user_meta = frappe.get_meta("User")
+        has_sales_target = user_meta.has_field("custom_sales_target")
+        has_revenue_target = user_meta.has_field("custom_revenue_target")
+        
+        # Process data for each agent
+        sales_target_data = []
+        for agent in agents:
+            # Get agent's sales orders
+            agent_orders = [
+                order for order in all_orders
+                if order.custom_agent == agent.name and
+                order.status in ["Completed", "To Deliver and Bill", "To Bill"]
+            ]
+            
+            total_deals = len(agent_orders)
+            
+            # Calculate revenue
+            revenue = sum(
+                float(order.grand_total or order.total or 0)
+                for order in agent_orders
+            )
+            
+            # Get cancellation/refund (for now, set to 0/0 as we need to check if this field exists)
+            cancellation = 0
+            refund = 0
+            
+            # Get sales target and revenue target from user custom fields
+            sales_target = 0
+            revenue_target = 0
+            
+            if has_sales_target or has_revenue_target:
+                user_doc = frappe.get_doc("User", agent.name)
+                if has_sales_target:
+                    sales_target = float(user_doc.get("custom_sales_target") or 0)
+                if has_revenue_target:
+                    revenue_target = float(user_doc.get("custom_revenue_target") or 0)
+            
+            sales_target_data.append({
+                "name": agent.full_name or agent.name,
+                "user_name": agent.name,
+                "totalDeals": total_deals,
+                "salesTarget": int(sales_target),
+                "cancellation": round(cancellation, 2),
+                "refund": round(refund, 2),
+                "revenue": round(revenue, 2),
+                "revenueTarget": int(revenue_target)
+            })
+        
+        # Sort by total deals (descending)
+        sales_target_data.sort(key=lambda x: x["totalDeals"], reverse=True)
+        
+        result = {
+            "todayDeals": today_deals,
+            "todayRevenue": round(today_revenue, 2),
+            "salesTargetData": sales_target_data
+        }
+        
+        create_response(200, "Sales target summary fetched successfully", result)
+        
+    except Exception as e:
+        frappe.log_error(
+            f"Error fetching sales target summary: {str(e)}",
+            "Sales Target Summary Error"
+        )
+        create_response(500, f"Error fetching sales target summary: {str(e)}", None)

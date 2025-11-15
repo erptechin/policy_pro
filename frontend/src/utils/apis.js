@@ -144,6 +144,12 @@ export const getStatistics = async () => {
   return response?.data?.data ?? {};
 };
 
+export const getSalesTargetSummary = async () => {
+  await getAuthorizationToken()
+  const response = await axiosInstance.get(`method/policy_pro.api.hooks.get_sales_target_summary`);
+  return response?.data?.data ?? {};
+};
+
 // File Upload
 export const uploadFile = async (file) => {
   const token = window.localStorage.getItem("authToken");

@@ -37,9 +37,6 @@ export function SalesReport() {
   return (
     <Card className="p-4 sm:px-5">
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-gray-800 dark:text-dark-50">
-          Sales Report
-        </h2>
         {isLoading ? (
           <div className="text-center py-8 text-gray-500 dark:text-dark-300">
             Loading sales data...
