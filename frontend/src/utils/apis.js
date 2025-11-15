@@ -132,6 +132,18 @@ export const getCustomData = async (params) => {
   }
 };
 
+export const getSalesReport = async () => {
+  await getAuthorizationToken()
+  const response = await axiosInstance.get(`method/policy_pro.api.hooks.get_sales_report`);
+  return response?.data?.data ?? [];
+};
+
+export const getStatistics = async () => {
+  await getAuthorizationToken()
+  const response = await axiosInstance.get(`method/policy_pro.api.hooks.get_statistics`);
+  return response?.data?.data ?? {};
+};
+
 // File Upload
 export const uploadFile = async (file) => {
   const token = window.localStorage.getItem("authToken");

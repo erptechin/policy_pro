@@ -3,6 +3,7 @@ Document Event Hooks for Policy Pro
 """
 import frappe
 from frappe.share import add as add_share, remove as remove_share
+from policy_pro.api.utils import create_response
 
 
 def on_update_lead(doc, method):
@@ -166,3 +167,126 @@ def _create_sales_order(lead_doc, customer_id):
             f"Error creating Sales Order for Lead {lead_doc.name}: {str(e)}",
             "Sales Order Creation Error"
         )
+
+
+@frappe.whitelist()
+def get_sales_report():
+    """
+    Get sales report data with leads, deals, and total value for each sales agent
+    
+    Returns:
+        dict: Sales report data with agents, their leads count, deals count, and total value
+    """
+    try:
+        # Get all Lead Users (sales agents)
+        agents = frappe.get_all(
+            "User",
+            filters={
+                "role_profile_name": "Lead User",
+                "enabled": 1
+            },
+            fields=["name", "full_name", "user_image"]
+        )
+        
+        # Get all leads
+        leads = frappe.get_all(
+            "Lead",
+            fields=["name", "owner"]
+        )
+        
+        # Get all sales orders
+        sales_orders = frappe.get_all(
+            "Sales Order",
+            fields=["name", "custom_agent", "total", "grand_total", "status"]
+        )
+        
+        # Process data for each agent
+        sales_data = []
+        for agent in agents:
+            # Count leads for this agent
+            leads_count = len([lead for lead in leads if lead.owner == agent.name])
+            
+            # Count deals (Sales Orders) for this agent
+            agent_orders = [
+                order for order in sales_orders
+                if order.custom_agent == agent.name and
+                order.status in ["Completed", "To Deliver and Bill", "To Bill"]
+            ]
+            deals_count = len(agent_orders)
+            
+            # Calculate total monetary value
+            total_value = sum(
+                float(order.grand_total or order.total or 0)
+                for order in agent_orders
+            )
+            
+            sales_data.append({
+                "name": agent.full_name or agent.name,
+                "user_name": agent.name,
+                "image": agent.user_image,
+                "leads": leads_count,
+                "deals": deals_count,
+                "totalValue": round(total_value, 2)
+            })
+        
+        # Sort by total value (descending)
+        sales_data.sort(key=lambda x: x["totalValue"], reverse=True)
+        
+        create_response(200, "Sales report fetched successfully", sales_data)
+        
+    except Exception as e:
+        frappe.log_error(
+            f"Error fetching sales report: {str(e)}",
+            "Sales Report Error"
+        )
+        create_response(500, f"Error fetching sales report: {str(e)}", None)
+
+
+@frappe.whitelist()
+def get_statistics():
+    """
+    Get statistics counts for dashboard
+    
+    Returns:
+        dict: Statistics data with counts for leads, lead managers, lead users, and sales orders
+    """
+    try:
+        # Count all Leads
+        leads_count = frappe.db.count("Lead")
+        
+        # Count Lead Managers (Users with role_profile_name = "Lead Manager")
+        lead_managers_count = frappe.db.count(
+            "User",
+            filters={
+                "role_profile_name": "Lead Manager",
+                "enabled": 1
+            }
+        )
+        
+        # Count Lead Users (Users with role_profile_name = "Lead User")
+        lead_users_count = frappe.db.count(
+            "User",
+            filters={
+                "role_profile_name": "Lead User",
+                "enabled": 1
+            }
+        )
+        
+        # Count all Sales Orders
+        sales_orders_count = frappe.db.count("Sales Order")
+        
+        statistics = {
+            "leads": leads_count,
+            "leadManagers": lead_managers_count,
+            "leadUsers": lead_users_count,
+            "salesOrders": sales_orders_count
+        }
+        
+        create_response(200, "Statistics fetched successfully", statistics)
+        
+    except Exception as e:
+        frappe.log_error(
+            f"Error fetching statistics: {str(e)}",
+            "Statistics Error"
+        )
+        create_response(500, f"Error fetching statistics: {str(e)}", None)

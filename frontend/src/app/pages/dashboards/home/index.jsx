@@ -3,9 +3,8 @@ import { Page } from "components/shared/Page";
 import { Statistics } from "./Statistics";
 import { OngoingProjects } from "./OngoingProjects";
 import { ClientMessages } from "./ClientMessages";
-import { Calendar } from "./Calendar";
-import { Tweets } from "./Tweets";
-import { Income } from "./Income";
+import { SalesReport } from "./SalesReport";
+import { SalesMessages } from "./SalesMessages";
 
 // ----------------------------------------------------------------------
 
@@ -17,13 +16,12 @@ export default function Home() {
           <div className="col-span-12 space-y-4 sm:space-y-5 lg:col-span-8 lg:space-y-6">
             <Statistics />
             <OngoingProjects />
+            <SalesReport />
           </div>
           <div className="col-span-12 lg:col-span-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-1 lg:gap-6">
               <ClientMessages />
-              {/* <Income /> */}
-              {/* <Calendar /> */}
-              {/* <Tweets /> */}
+              <SalesMessages />
             </div>
           </div>
         </div>
