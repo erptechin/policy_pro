@@ -36,7 +36,7 @@ function App() {
             <BreakpointProvider>
               <SidebarProvider>
                 <RouterProvider router={router} />
-                {/* <InstallPrompt /> */}
+                <InstallPrompt />
               </SidebarProvider>
             </BreakpointProvider>
           </LocaleProvider>
