@@ -120,6 +120,15 @@ def list_data():
         fields = frappe.local.form_dict.get("fields") or []
         filters = frappe.local.form_dict.get("filters") or []
         or_filters = frappe.local.form_dict.get("or_filters") or []
+        # Parse JSON strings (frontend may send params as JSON strings)
+        if isinstance(fields, str):
+            fields = json.loads(fields) if fields else []
+        if isinstance(filters, str):
+            filters = json.loads(filters) if filters else []
+        if isinstance(or_filters, str):
+            or_filters = json.loads(or_filters) if or_filters else []
+        if not fields:
+            fields = ["*"]
         page = int(frappe.local.form_dict.get("page", 1))
         page_length = int(frappe.local.form_dict.get("page_length", 10))
         order_by = frappe.local.form_dict.get("order_by") or "modified desc"
@@ -129,7 +138,7 @@ def list_data():
             doctype,
             filters=filters,
             or_filters=or_filters,
-            fields=["count(name)"]
+            fields=[{"COUNT": "*"}]
         )
 
         data = frappe.get_all(
@@ -165,7 +174,7 @@ def list_data():
         create_response(
             200,
             f"{doctype} list successfully fetched!",
-            {"counts": counts[0]['count(name)'], "data": enhanced_data},
+            {"counts": counts[0].get("COUNT(*)", 0), "data": enhanced_data},
         )
 
     except Exception as ex:
