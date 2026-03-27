@@ -44,6 +44,8 @@ export function DataTable({
   fields,
   addNewRoute = "add-new",
   hideAddNew = false,
+  hideDelete = false,
+  hideEdit = false,
   storageKey = "default",
   isPrint = false,
   showPrint = false,
@@ -86,7 +88,7 @@ export function DataTable({
 
   const table = useReactTable({
     data: data,
-    columns: Columns(info?.fields, [], isPrint, showPrint, showOnlyPrint, role),
+    columns: Columns(info?.fields, [], isPrint, showPrint, showOnlyPrint, role, hideDelete, hideEdit),
     doctype,
     state: {
       globalFilter,
@@ -328,6 +330,8 @@ DataTable.propTypes = {
   fields: PropTypes.arrayOf(PropTypes.string).isRequired,
   addNewRoute: PropTypes.string,
   hideAddNew: PropTypes.bool,
+  hideDelete: PropTypes.bool,
+  hideEdit: PropTypes.bool,
   storageKey: PropTypes.string,
   isPrint: PropTypes.bool,
   showPrint: PropTypes.bool,

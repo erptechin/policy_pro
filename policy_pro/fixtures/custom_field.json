@@ -1,0 +1,13 @@
+[
+    {
+        "doctype": "Custom Field",
+        "dt": "User",
+        "fieldname": "custom_sales_target",
+        "fieldtype": "Data",
+        "insert_after": "username",
+        "is_system_generated": 1,
+        "label": "Sales Target",
+        "name": "User-custom_sales_target",
+        "read_only": 0
+    }
+]

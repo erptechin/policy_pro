@@ -1,7 +1,6 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router";
 import { Skeleton } from "components/ui";
-import { useThemeContext } from "app/contexts/theme/context";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { DocumentPlusIcon } from "@heroicons/react/24/outline";
@@ -14,6 +13,7 @@ import DynamicForms from 'app/components/form/dynamicForms';
 import { useInfo, useAddData, useFeachSingle, useUpdateData } from "hooks/useApiHook";
 import { useDisclosure } from "hooks";
 import { ChangePasswordModal } from "../../../components/ChangePasswordModal";
+import { useThemeContext } from "app/contexts/theme/context";
 
 const pageName = "Sales Agent"
 const doctype = "User"
@@ -23,6 +23,7 @@ const fields = [
   'last_name',
   'email',
   'mobile_no',
+  'custom_sales_target',
 ]
 
 const subFields = ['enabled','user_image']

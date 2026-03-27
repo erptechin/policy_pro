@@ -62,7 +62,7 @@ export function SalesMessages() {
         {/* Green Banner Header */}
         <div className="bg-green-600 px-4 py-3 sm:px-5">
           <h2 className="text-lg font-semibold text-white">
-            Sales Target Summary
+            Sales Target Summary Today
           </h2>
         </div>
 
@@ -86,13 +86,7 @@ export function SalesMessages() {
                     Sales Target
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-dark-200 uppercase">
-                    Cancellation/Refund (AED)
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-dark-200 uppercase">
                     Revenue Mode
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-dark-200 uppercase">
-                    Revenue Target
                   </th>
                 </tr>
               </thead>
@@ -119,13 +113,7 @@ export function SalesMessages() {
                         {agent.salesTarget}
                       </td>
                       <td className="px-4 py-3 text-sm text-green-600 dark:text-green-400">
-                        {agent.cancellation.toFixed(2)}/{agent.refund.toFixed(2)}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-green-600 dark:text-green-400">
                         {agent.revenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-green-600 dark:text-green-400">
-                        {formatRevenueTarget(agent.revenueTarget)}
                       </td>
                     </tr>
                   ))

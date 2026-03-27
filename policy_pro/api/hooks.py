@@ -2,8 +2,52 @@
 Document Event Hooks for Policy Pro
 """
 import frappe
+import re
 from frappe.share import add as add_share, remove as remove_share
 from policy_pro.api.utils import create_response
+
+
+def parse_currency_string(value):
+    """
+    Parse a currency string (e.g., '50,000 AED', '1,234.56 USD') to float
+    
+    Args:
+        value: String value that may contain currency formatting
+        
+    Returns:
+        float: Numeric value extracted from the string, or 0 if parsing fails
+    """
+    if not value:
+        return 0.0
+    
+    # Convert to string if it's not already
+    value_str = str(value).strip()
+    
+    # If it's already a number, return it
+    try:
+        return float(value_str)
+    except (ValueError, TypeError):
+        pass
+    
+    # Remove currency symbols and common currency codes (AED, USD, EUR, etc.)
+    # Remove any non-digit characters except decimal point and comma
+    # First, remove currency codes (3-letter codes at the end)
+    value_str = re.sub(r'\s*[A-Z]{2,3}\s*$', '', value_str, flags=re.IGNORECASE)
+    
+    # Remove currency symbols ($, €, £, etc.)
+    value_str = re.sub(r'[$€£¥₹]', '', value_str)
+    
+    # Remove commas (thousand separators)
+    value_str = value_str.replace(',', '')
+    
+    # Strip whitespace
+    value_str = value_str.strip()
+    
+    # Try to convert to float
+    try:
+        return float(value_str) if value_str else 0.0
+    except (ValueError, TypeError):
+        return 0.0
 
 
 def on_update_lead(doc, method):
@@ -11,7 +55,7 @@ def on_update_lead(doc, method):
     Handle Lead document updates
     
     - For "New" status: Grant access to the current user and set as assigned user
-    - For "CEO Approval" status: Grant access to the assigned user
+    - When assigned_user changes: Remove access from old user and grant access to new user
     
     Args:
         doc: The Lead document
@@ -42,17 +86,32 @@ def on_update_lead(doc, method):
                 "Lead Share Error"
             )
     
-    # Handle "CEO Approval" status - grant access to assigned user
-    elif lead_status == "CEO Approval":
-        assigned_user = doc.get("custom_assigned_user")
-        if not assigned_user:
-            frappe.log_error(
-                f"Lead {doc.name} has CEO Approval status but no assigned user",
-                "Lead Update Error"
-            )
-            return
-        
+    # Handle assigned_user changes - manage share access
+    assigned_user = doc.get("custom_assigned_user")
+    if assigned_user:
         try:
+            # Get previous assigned user from document before save
+            previous_assigned_user = None
+            if hasattr(doc, '_doc_before_save') and doc._doc_before_save:
+                previous_assigned_user = doc._doc_before_save.get("custom_assigned_user")
+            else:
+                # Fallback: get from database (might be same as current if no change)
+                previous_assigned_user = frappe.db.get_value("Lead", doc.name, "custom_assigned_user")
+            
+            # If assigned user has changed, remove access from old user
+            if previous_assigned_user and previous_assigned_user != assigned_user:
+                try:
+                    remove_share("Lead", doc.name, previous_assigned_user)
+                    frappe.logger().info(
+                        f"Removed share access for user {previous_assigned_user} from Lead {doc.name}"
+                    )
+                except Exception as e:
+                    # Share might not exist, which is fine
+                    frappe.logger().debug(
+                        f"Could not remove share for user {previous_assigned_user} from Lead {doc.name}: {str(e)}"
+                    )
+            
+            # Add share access to new assigned user
             user = frappe.get_doc("User", assigned_user)
             add_share("Lead", doc.name, user.name, write=1, share=1)
             frappe.msgprint(
@@ -60,113 +119,9 @@ def on_update_lead(doc, method):
             )
         except Exception as e:
             frappe.log_error(
-                f"Error adding share for user {assigned_user} to Lead {doc.name}: {str(e)}",
+                f"Error managing share for user {assigned_user} on Lead {doc.name}: {str(e)}",
                 "Lead Share Error"
             )
-    
-    # Handle "Approved" status - create Customer and Sales Order
-    elif lead_status == "Approved":
-        try:
-            # Get or create Customer
-            customer_id = _get_or_create_customer(doc)
-            if not customer_id:
-                frappe.log_error(
-                    f"Failed to get or create customer for Lead {doc.name}",
-                    "Lead Approval Error"
-                )
-                return
-            
-            # Create Sales Order
-            _create_sales_order(doc, customer_id)
-            
-        except Exception as e:
-            frappe.log_error(
-                f"Error processing approved Lead {doc.name}: {str(e)}",
-                "Lead Approval Error"
-            )
-
-
-def _get_or_create_customer(lead_doc):
-    """
-    Get existing customer or create new one from Lead data
-    
-    Args:
-        lead_doc: The Lead document
-        
-    Returns:
-        str: Customer ID/name, or None if creation failed
-    """
-    first_name = lead_doc.get("first_name")
-    last_name = lead_doc.get("last_name")
-    customer_name = f"{first_name} {last_name or ''}".strip()
-
-    # check if customer exists by name
-    customer = frappe.db.get_value("Customer", {"customer_name": customer_name}, "name")
-    if customer:
-        return customer
-    else:
-        # Create new customer
-        customer_doc = frappe.new_doc("Customer")
-        customer_doc.customer_name = customer_name
-        customer_doc.customer_type = "Individual"
-        customer_doc.customer_group = frappe.db.get_single_value("Selling Settings", "customer_group") or "Individual"
-        customer_doc.territory = frappe.db.get_single_value("Selling Settings", "territory") or "All Territories"
-        customer_doc.insert(ignore_permissions=True)
-        return customer_doc.name
-
-
-def _create_sales_order(lead_doc, customer_id):
-    """
-    Create Sales Order from Lead data
-    
-    Args:
-        lead_doc: The Lead document
-        customer_id: The Customer ID/name
-    """
-    try:
-        # Check if Sales Order already exists for this Lead
-        existing_so = frappe.db.get_value("Sales Order",{"custom_lead": lead_doc.name},"name")
-        
-        if existing_so:
-            frappe.msgprint(
-                frappe._("Sales Order {0} already exists for this Lead").format(existing_so)
-            )
-            return
-        
-        # Create Sales Order
-        sales_order = frappe.new_doc("Sales Order")
-        sales_order.customer = customer_id
-        sales_order.transaction_date = frappe.utils.today()
-        sales_order.delivery_date = frappe.utils.add_days(frappe.utils.today(), 7)
-        
-        # Link to Lead if custom field exists
-        if frappe.get_meta("Sales Order").has_field("custom_lead"):
-            sales_order.custom_lead = lead_doc.name
-        
-        # Add item with item_code "Policy Pro"
-        sales_order.append("items", {
-            "item_code": "Policy Pro",
-            "qty": 1,
-            "rate": 0
-        })
-        
-        # Disable email notifications
-        sales_order.flags.ignore_mandatory = True
-        sales_order.flags.disable_email_notifications = True
-        sales_order.insert(ignore_permissions=True)
-        frappe.db.commit()
-        
-        frappe.msgprint(
-            frappe._("Sales Order {0} created successfully for Customer {1}").format(
-                sales_order.name, customer_id
-            )
-        )
-        
-    except Exception as e:
-        frappe.log_error(
-            f"Error creating Sales Order for Lead {lead_doc.name}: {str(e)}",
-            "Sales Order Creation Error"
-        )
 
 
 @frappe.whitelist()
@@ -182,7 +137,7 @@ def get_sales_report():
         agents = frappe.get_all(
             "User",
             filters={
-                "role_profile_name": "Lead User",
+                "role_profile_name": ["in", ["Lead User", "Lead Manager"]],
                 "enabled": 1
             },
             fields=["name", "full_name", "user_image"]
@@ -191,7 +146,7 @@ def get_sales_report():
         # Get all leads
         leads = frappe.get_all(
             "Lead",
-            fields=["name", "owner"]
+            fields=["name", "owner", "custom_assigned_user"]
         )
         
         # Get all sales orders
@@ -204,13 +159,13 @@ def get_sales_report():
         sales_data = []
         for agent in agents:
             # Count leads for this agent
-            leads_count = len([lead for lead in leads if lead.owner == agent.name])
+            leads_count = len([lead for lead in leads if lead.custom_assigned_user == agent.name])
             
             # Count deals (Sales Orders) for this agent
             agent_orders = [
                 order for order in sales_orders
                 if order.custom_agent == agent.name and
-                order.status in ["Completed", "To Deliver and Bill", "To Bill"]
+                order.status in ["Completed", "To Deliver and Bill", "To Bill", "Draft"]
             ]
             deals_count = len(agent_orders)
             
@@ -310,9 +265,9 @@ def get_sales_target_summary():
             "Sales Order",
             filters={
                 "transaction_date": today_date,
-                "status": ["in", ["Completed", "To Deliver and Bill", "To Bill"]]
+                "status": ["in", ["Completed", "To Deliver and Bill", "To Bill" , "Draft"]]
             },
-            fields=["name", "grand_total", "total"]
+            fields=["name", "custom_agent", "grand_total", "total", "status", "transaction_date"]
         )
         
         today_deals = len(today_orders)
@@ -325,7 +280,7 @@ def get_sales_target_summary():
         agents = frappe.get_all(
             "User",
             filters={
-                "role_profile_name": "Lead User",
+                "role_profile_name": ["in", ["Lead User", "Lead Manager"]],
                 "enabled": 1
             },
             fields=["name", "full_name"]
@@ -345,19 +300,26 @@ def get_sales_target_summary():
         # Process data for each agent
         sales_target_data = []
         for agent in agents:
-            # Get agent's sales orders
-            agent_orders = [
-                order for order in all_orders
+            # Get agent's sales orders for today (for deals count)
+            agent_today_orders = [
+                order for order in today_orders
                 if order.custom_agent == agent.name and
-                order.status in ["Completed", "To Deliver and Bill", "To Bill"]
+                order.status in ["Completed", "To Deliver and Bill", "To Bill", "Draft"]
             ]
             
-            total_deals = len(agent_orders)
+            total_deals = len(agent_today_orders)
             
-            # Calculate revenue
+            # Get agent's all sales orders (for revenue calculation)
+            agent_all_orders = [
+                order for order in all_orders
+                if order.custom_agent == agent.name and
+                order.status in ["Completed", "To Deliver and Bill", "To Bill", "Draft"]
+            ]
+            
+            # Calculate revenue from all orders
             revenue = sum(
                 float(order.grand_total or order.total or 0)
-                for order in agent_orders
+                for order in agent_all_orders
             )
             
             # Get cancellation/refund (for now, set to 0/0 as we need to check if this field exists)
@@ -366,14 +328,11 @@ def get_sales_target_summary():
             
             # Get sales target and revenue target from user custom fields
             sales_target = 0
-            revenue_target = 0
             
             if has_sales_target or has_revenue_target:
                 user_doc = frappe.get_doc("User", agent.name)
                 if has_sales_target:
-                    sales_target = float(user_doc.get("custom_sales_target") or 0)
-                if has_revenue_target:
-                    revenue_target = float(user_doc.get("custom_revenue_target") or 0)
+                    sales_target = parse_currency_string(user_doc.get("custom_sales_target"))
             
             sales_target_data.append({
                 "name": agent.full_name or agent.name,
@@ -383,7 +342,6 @@ def get_sales_target_summary():
                 "cancellation": round(cancellation, 2),
                 "refund": round(refund, 2),
                 "revenue": round(revenue, 2),
-                "revenueTarget": int(revenue_target)
             })
         
         # Sort by total deals (descending)

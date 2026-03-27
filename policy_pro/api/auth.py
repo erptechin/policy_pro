@@ -64,7 +64,8 @@ def login(usr, pwd, device_id=None):
         "email": user.email or "",
         "user_image": user.user_image,
         "user_roles": get_permissions_map(user.role_profile_name),
-        "role_profile_name": user.role_profile_name,
+        "role_profiles": user.role_profiles,
+        "role_profile_name": user.role_profiles[0].role_profile if user.role_profiles else None,
         # "settings": settings,
     }
     frappe.response["token"] = base64.b64encode(token_string.encode("ascii")).decode(

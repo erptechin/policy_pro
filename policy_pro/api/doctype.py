@@ -120,25 +120,33 @@ def list_data():
         fields = frappe.local.form_dict.get("fields") or []
         filters = frappe.local.form_dict.get("filters") or []
         or_filters = frappe.local.form_dict.get("or_filters") or []
-        # Parse JSON strings (frontend may send params as JSON strings)
-        if isinstance(fields, str):
-            fields = json.loads(fields) if fields else []
-        if isinstance(filters, str):
-            filters = json.loads(filters) if filters else []
-        if isinstance(or_filters, str):
-            or_filters = json.loads(or_filters) if or_filters else []
-        if not fields:
-            fields = ["*"]
         page = int(frappe.local.form_dict.get("page", 1))
         page_length = int(frappe.local.form_dict.get("page_length", 10))
         order_by = frappe.local.form_dict.get("order_by") or "modified desc"
+        
+        # Parse JSON strings if they are strings
+        if isinstance(fields, str):
+            try:
+                fields = json.loads(fields)
+            except json.JSONDecodeError:
+                fields = []
+        if isinstance(filters, str):
+            try:
+                filters = json.loads(filters)
+            except json.JSONDecodeError:
+                filters = []
+        if isinstance(or_filters, str):
+            try:
+                or_filters = json.loads(or_filters)
+            except json.JSONDecodeError:
+                or_filters = []
 
         # Fetch data
         counts = frappe.get_all(
             doctype,
             filters=filters,
             or_filters=or_filters,
-            fields=[{"COUNT": "*"}]
+            fields=[{"COUNT": "*", "as": "count"}],
         )
 
         data = frappe.get_all(
@@ -174,7 +182,7 @@ def list_data():
         create_response(
             200,
             f"{doctype} list successfully fetched!",
-            {"counts": counts[0].get("COUNT(*)", 0), "data": enhanced_data},
+            {"counts": counts[0]["count"], "data": enhanced_data},
         )
 
     except Exception as ex:
@@ -346,3 +354,454 @@ def update_data():
     except Exception as ex:
         frappe.log_error(frappe.get_traceback(), "Error in updating data with MySQL")
         create_response(500, ex)
+
+@frappe.whitelist(allow_guest=True)
+def create_lead_with_customer():
+    """
+    Create a Lead with Customer and Car Profiles in a single transaction.
+    This endpoint handles the complete lead creation flow:
+    1. Create Customer
+    2. Create Lead with Customer reference
+    3. Update Customer with Lead reference
+    4. Create all Car Profiles
+    
+    This endpoint is whitelisted to allow guest users (public access).
+    """
+    try:
+        # Get form data from request
+        form_data = frappe.local.form_dict.get("form_data")
+        car_profiles = frappe.local.form_dict.get("car_profiles") or []
+        username = frappe.session.user or "Guest"
+        
+        # Parse JSON strings if they are strings
+        if isinstance(form_data, str):
+            try:
+                form_data = json.loads(form_data)
+            except json.JSONDecodeError:
+                create_response(400, "Invalid JSON format in form_data", {})
+                return
+        
+        if isinstance(car_profiles, str):
+            try:
+                car_profiles = json.loads(car_profiles)
+            except json.JSONDecodeError:
+                car_profiles = []
+        
+        # Validate: at least one car profile is required
+        # if not car_profiles or len(car_profiles) == 0:
+        #     create_response(400, "Please add at least one Car Profile before creating the lead.", {})
+        #     return
+        
+        # Validate required fields
+        if not form_data:
+            create_response(400, "Form data is required", {})
+            return
+        
+        # Step 1: Create Customer
+        customer_name = f"{form_data.get('first_name', '')} {form_data.get('last_name', '')}".strip() or 'Customer'
+        customer_data = {
+            "doctype": "Customer",
+            "customer_name": customer_name,
+            "customer_type": "Individual",
+            "email_id": form_data.get("email_id") or "",
+            "mobile_no": form_data.get("mobile_no") or ""
+        }
+        
+        customer_doc = frappe.get_doc(customer_data)
+        customer_doc.flags.ignore_mandatory = True
+        customer_doc.insert(ignore_permissions=True)
+        customer_id = customer_doc.name
+        frappe.db.commit()
+        
+        # Step 2: Create Lead with Customer id and status="Open"
+        lead_data = {
+            "doctype": "Lead",
+            "first_name": form_data.get("first_name") or "",
+            "last_name": form_data.get("last_name") or "",
+            "email_id": form_data.get("email_id") or "",
+            "mobile_no": form_data.get("mobile_no") or "",
+            "customer": customer_id,
+            "status": "Open",
+            "custom_assigned_user": username,
+            "custom_lead_status": "New"
+        }
+        
+        # Add optional fields if they exist
+        if form_data.get("source"):
+            lead_data["source"] = form_data.get("source")
+        if form_data.get("custom_next_follow_up_date"):
+            lead_data["custom_next_follow_up_date"] = form_data.get("custom_next_follow_up_date")
+        
+        lead_doc = frappe.get_doc(lead_data)
+        lead_doc.flags.ignore_mandatory = True
+        lead_doc.insert(ignore_permissions=True)
+        lead_id = lead_doc.name
+        frappe.db.commit()
+        
+        # Step 3: Update customer with lead id
+        customer_doc.lead_name = lead_id
+        customer_doc.save(ignore_permissions=True)
+        frappe.db.commit()
+        
+        # Step 4: Create all Car Profiles
+        created_car_profiles = []
+        for car_profile in car_profiles:
+            car_profile_data = {
+                "doctype": "Car Profile",
+                "customer": customer_id,
+                "lead": lead_id,
+                "status": "New"
+            }
+            
+            # Copy all fields from car_profile to car_profile_data
+            for key, value in car_profile.items():
+                if key not in ["doctype", "customer", "lead", "status"]:
+                    car_profile_data[key] = value
+            
+            car_profile_doc = frappe.get_doc(car_profile_data)
+            car_profile_doc.flags.ignore_mandatory = True
+            car_profile_doc.insert(ignore_permissions=True)
+            created_car_profiles.append(car_profile_doc.name)
+        
+        frappe.db.commit()
+        
+        # Return success response
+        create_response(
+            200,
+            "Lead created successfully with Customer and Car Profiles",
+            {
+                "customer_id": customer_id,
+                "lead_id": lead_id,
+                "car_profile_ids": created_car_profiles
+            }
+        )
+        
+    except Exception as ex:
+        frappe.log_error(frappe.get_traceback(), "Error in creating lead with customer")
+        create_response(500, f"Error creating lead: {str(ex)}", {})
+
+@frappe.whitelist(allow_guest=True)
+def create_customer():
+    """
+    Create a Customer document.
+    This endpoint is whitelisted to allow guest users (public access).
+    """
+    try:
+        # Get customer data from request
+        customer_data = frappe.local.form_dict.get("customer_data") or frappe.local.form_dict
+        
+        # Parse JSON string if it's a string
+        if isinstance(customer_data, str):
+            try:
+                customer_data = json.loads(customer_data)
+            except json.JSONDecodeError:
+                create_response(400, "Invalid JSON format in customer_data", {})
+                return
+        
+        # Validate required fields
+        if not customer_data:
+            create_response(400, "Customer data is required", {})
+            return
+        
+        # Prepare customer document
+        doc_data = {
+            "doctype": "Customer",
+            "customer_name": customer_data.get("customer_name") or "Customer",
+            "customer_type": customer_data.get("customer_type") or "Individual",
+            "email_id": customer_data.get("email_id") or "",
+            "mobile_no": customer_data.get("mobile_no") or ""
+        }
+        
+        # Add any additional fields
+        for key, value in customer_data.items():
+            if key not in ["doctype"] and value is not None:
+                doc_data[key] = value
+        
+        customer_doc = frappe.get_doc(doc_data)
+        customer_doc.flags.ignore_mandatory = True
+        customer_doc.insert(ignore_permissions=True)
+        frappe.db.commit()
+        
+        create_response(
+            200,
+            "Customer created successfully",
+            {
+                "customer_id": customer_doc.name,
+                "customer_name": customer_doc.customer_name
+            }
+        )
+        
+    except Exception as ex:
+        frappe.log_error(frappe.get_traceback(), "Error in creating customer")
+        create_response(500, f"Error creating customer: {str(ex)}", {})
+
+@frappe.whitelist(allow_guest=True)
+def create_lead():
+    """
+    Create a Lead document.
+    This endpoint is whitelisted to allow guest users (public access).
+    """
+    try:
+        # Get lead data from request
+        lead_data = frappe.local.form_dict.get("lead_data") or frappe.local.form_dict
+        username = frappe.local.form_dict.get("username") or frappe.session.user or "Guest"
+        
+        # Parse JSON string if it's a string
+        if isinstance(lead_data, str):
+            try:
+                lead_data = json.loads(lead_data)
+            except json.JSONDecodeError:
+                create_response(400, "Invalid JSON format in lead_data", {})
+                return
+        
+        # Validate required fields
+        if not lead_data:
+            create_response(400, "Lead data is required", {})
+            return
+        
+        # Prepare lead document
+        doc_data = {
+            "doctype": "Lead",
+            "first_name": lead_data.get("first_name") or "",
+            "last_name": lead_data.get("last_name") or "",
+            "email_id": lead_data.get("email_id") or "",
+            "mobile_no": lead_data.get("mobile_no") or "",
+            "status": lead_data.get("status") or "Open",
+            "custom_assigned_user": username,
+            "custom_lead_status": lead_data.get("custom_lead_status") or "New"
+        }
+        
+        # Add customer if provided
+        if lead_data.get("customer"):
+            doc_data["customer"] = lead_data.get("customer")
+        
+        # Add any additional fields
+        for key, value in lead_data.items():
+            if key not in ["doctype"] and value is not None and key not in doc_data:
+                doc_data[key] = value
+        
+        lead_doc = frappe.get_doc(doc_data)
+        lead_doc.flags.ignore_mandatory = True
+        lead_doc.insert(ignore_permissions=True)
+        frappe.db.commit()
+        
+        create_response(
+            200,
+            "Lead created successfully",
+            {
+                "lead_id": lead_doc.name,
+                "lead_name": lead_doc.lead_name if hasattr(lead_doc, "lead_name") else f"{lead_doc.first_name} {lead_doc.last_name}".strip()
+            }
+        )
+        
+    except Exception as ex:
+        frappe.log_error(frappe.get_traceback(), "Error in creating lead")
+        create_response(500, f"Error creating lead: {str(ex)}", {})
+
+@frappe.whitelist(allow_guest=True)
+def create_cod_management():
+    """
+    Create a COD Management document.
+    This endpoint is whitelisted to allow guest users (public access).
+    """
+    try:
+        # Get COD Management data from request
+        cod_data = frappe.local.form_dict.get("cod_data") or frappe.local.form_dict
+        
+        # Parse JSON string if it's a string
+        if isinstance(cod_data, str):
+            try:
+                cod_data = json.loads(cod_data)
+            except json.JSONDecodeError:
+                create_response(400, "Invalid JSON format in cod_data", {})
+                return
+        
+        # Validate required fields
+        if not cod_data:
+            create_response(400, "COD Management data is required", {})
+            return
+        
+        # Validate mandatory fields
+        required_fields = ["lead", "car_profile", "policy_name", "file_attachment", "approval_manager"]
+        missing_fields = [field for field in required_fields if not cod_data.get(field)]
+        if missing_fields:
+            create_response(400, f"Missing required fields: {', '.join(missing_fields)}", {})
+            return
+        
+        # Prepare COD Management document
+        doc_data = {
+            "doctype": "COD Management",
+            "lead": cod_data.get("lead"),
+            "customer": cod_data.get("customer"),
+            "car_profile": cod_data.get("car_profile"),
+            "policy_name": cod_data.get("policy_name"),
+            "policy_amount": cod_data.get("policy_amount") or 0,
+            "status": cod_data.get("status") or "Waiting",
+            "type": cod_data.get("type") or "New",
+            "file_attachment": cod_data.get("file_attachment"),
+            "approval_manager": cod_data.get("approval_manager"),
+            "comments": cod_data.get("comments") or ""
+        }
+        
+        cod_doc = frappe.get_doc(doc_data)
+        cod_doc.flags.ignore_mandatory = True
+        cod_doc.insert(ignore_permissions=True)
+        frappe.db.commit()
+        
+        create_response(
+            200,
+            "COD Management created successfully",
+            {
+                "cod_id": cod_doc.name,
+                "lead": cod_doc.lead,
+                "customer": cod_doc.customer,
+                "car_profile": cod_doc.car_profile
+            }
+        )
+        
+    except Exception as ex:
+        frappe.log_error(frappe.get_traceback(), "Error in creating COD Management")
+        create_response(500, f"Error creating COD Management: {str(ex)}", {})
+
+@frappe.whitelist(allow_guest=True)
+def update_cod_management():
+    """
+    Update a COD Management document.
+    This endpoint is whitelisted to allow guest users (public access).
+    """
+    try:
+        # Get COD Management data and id from request
+        cod_data = frappe.local.form_dict.get("cod_data") or frappe.local.form_dict
+        cod_id = frappe.local.form_dict.get("id") or cod_data.get("id")
+        
+        # Parse JSON string if it's a string
+        if isinstance(cod_data, str):
+            try:
+                cod_data = json.loads(cod_data)
+            except json.JSONDecodeError:
+                create_response(400, "Invalid JSON format in cod_data", {})
+                return
+        
+        # Validate required fields
+        if not cod_id:
+            create_response(400, "COD Management ID is required", {})
+            return
+        
+        if not cod_data:
+            create_response(400, "COD Management data is required", {})
+            return
+        
+        # Check if document exists
+        if not frappe.db.exists("COD Management", cod_id):
+            create_response(404, f"COD Management with ID {cod_id} not found", {})
+            return
+        
+        # Get the document
+        cod_doc = frappe.get_doc("COD Management", cod_id)
+        
+        # Update fields
+        updateable_fields = [
+            "car_profile", "policy_name", "policy_amount", "status", "type",
+            "file_attachment", "approval_manager", "comments"
+        ]
+        
+        for field in updateable_fields:
+            if field in cod_data and cod_data[field] is not None:
+                cod_doc.set(field, cod_data[field])
+        
+        # Validate mandatory fields are still present
+        if not cod_doc.file_attachment:
+            create_response(400, "File attachment is required", {})
+            return
+        
+        cod_doc.flags.ignore_mandatory = True
+        cod_doc.save(ignore_permissions=True)
+        frappe.db.commit()
+        
+        create_response(
+            200,
+            "COD Management updated successfully",
+            {
+                "cod_id": cod_doc.name,
+                "lead": cod_doc.lead,
+                "customer": cod_doc.customer,
+                "car_profile": cod_doc.car_profile
+            }
+        )
+        
+    except Exception as ex:
+        frappe.log_error(frappe.get_traceback(), "Error in updating COD Management")
+        create_response(500, f"Error updating COD Management: {str(ex)}", {})
+
+@frappe.whitelist(allow_guest=True)
+def get_makes():
+    """
+    Get all Make records.
+    This endpoint is whitelisted to allow guest users (public access).
+    
+    Returns:
+        dict: List of all Make records with name and title
+    """
+    try:
+        # Fetch all Make records
+        makes = frappe.get_all(
+            "Make",
+            fields=["name", "title"],
+            order_by="title asc"
+        )
+        
+        create_response(
+            200,
+            "Makes fetched successfully",
+            {"data": makes}
+        )
+        
+    except Exception as ex:
+        frappe.log_error(frappe.get_traceback(), "Error in fetching Makes")
+        create_response(500, f"Error fetching Makes: {str(ex)}", {})
+
+@frappe.whitelist(allow_guest=True)
+def get_models():
+    """
+    Get all Model records.
+    This endpoint is whitelisted to allow guest users (public access).
+    
+    Optional Parameters:
+        make (str): Filter models by Make name
+        year (int): Filter models by year
+    
+    Returns:
+        dict: List of all Model records with name, title, year, and make
+    """
+    try:
+        # Get optional filters from request
+        make_filter = frappe.local.form_dict.get("make")
+        year_filter = frappe.local.form_dict.get("year")
+        
+        # Build filters
+        filters = {}
+        if make_filter:
+            filters["make"] = make_filter
+        if year_filter:
+            try:
+                filters["year"] = int(year_filter)
+            except (ValueError, TypeError):
+                pass  # Ignore invalid year filter
+        
+        # Fetch all Model records
+        models = frappe.get_all(
+            "Model",
+            fields=["name", "title", "year", "make"],
+            filters=filters if filters else None,
+            order_by="title asc"
+        )
+        
+        create_response(
+            200,
+            "Models fetched successfully",
+            {"data": models}
+        )
+        
+    except Exception as ex:
+        frappe.log_error(frappe.get_traceback(), "Error in fetching Models")
+        create_response(500, f"Error fetching Models: {str(ex)}", {})

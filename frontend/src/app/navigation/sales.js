@@ -42,6 +42,14 @@ export const sales = {
             Icon: OrderTimerIcon,
         },
         {
+            id: 'sales.cod-approval',
+            path: path(ROOT_MASTERS, '/cod-approval'),
+            type: NAV_TYPE_ITEM,
+            title: 'Sales Order',
+            transKey: 'nav.sales.cod-approval',
+            Icon: OrderTimerIcon,
+        },
+        {
             id: 'sales.cod-manager',
             path: path(ROOT_MASTERS, '/cod-manager'),
             type: NAV_TYPE_ITEM,

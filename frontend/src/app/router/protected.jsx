@@ -127,6 +127,27 @@ const protectedRoutes = {
               }),
             },
             {
+              path: "cod-approval",
+              lazy: async () => ({
+                Component: (await import("app/pages/sales/cod-approval"))
+                  .default,
+              }),
+            },
+            {
+              path: "cod-approval/add-new",
+              lazy: async () => ({
+                Component: (await import("app/pages/sales/cod-approval/form"))
+                  .default,
+              }),
+            },
+            {
+              path: "cod-approval/edit/:id",
+              lazy: async () => ({
+                Component: (await import("app/pages/sales/cod-approval/form"))
+                  .default,
+              }),
+            },
+            {
               path: "cod-manager",
               lazy: async () => ({
                 Component: (await import("app/pages/sales/cod-manager"))

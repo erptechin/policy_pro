@@ -3,5 +3,4 @@
  * https://github.com/pinia-studio/jwt-api-node
 **/
 
-export const JWT_HOST_API = "http://localhost:8000";
-// export const JWT_HOST_API = "";
+export const JWT_HOST_API = import.meta.env.DEV ? "http://localhost:8000" : "";

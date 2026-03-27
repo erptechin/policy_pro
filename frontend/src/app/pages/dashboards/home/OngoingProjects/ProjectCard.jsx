@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 
 // Local Imports
 import { Avatar, Card } from "components/ui";
+import { useNavigate } from "react-router";
 
 // ----------------------------------------------------------------------
 
@@ -17,7 +18,7 @@ export function ProjectCard({
   color = "primary"
 }) {
   const displayName = lead_name || id;
-  
+  const navigate = useNavigate();
   return (
     <Card className="p-3">
       <div className="flex items-center gap-3">
@@ -26,7 +27,7 @@ export function ProjectCard({
           name={displayName}
           initialColor="auto"
         />
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 cursor-pointer" onClick={() => navigate(`/sales/leads/edit/${id}`)}>
           <div className="flex justify-between">
             <p className="truncate font-medium text-gray-800 dark:text-dark-100">
               {displayName}

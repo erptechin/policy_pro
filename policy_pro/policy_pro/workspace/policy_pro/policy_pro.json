@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"PADnwOfZ9T\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Policy Pro</span>\",\"col\":12}},{\"id\":\"1QDl93s2HV\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customers\",\"col\":3}},{\"id\":\"Nm0cmFS7Bd\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"COD Mangers\",\"col\":3}},{\"id\":\"KS0_JIUYbL\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Sales Agents\",\"col\":3}},{\"id\":\"pQp-7t_m6o\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Leads\",\"col\":3}},{\"id\":\"Aj80LpA2Fp\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Sales Order\",\"col\":3}}]",
+ "content": "[{\"id\":\"PADnwOfZ9T\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Policy Pro</span>\",\"col\":12}},{\"id\":\"1QDl93s2HV\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customers\",\"col\":3}},{\"id\":\"Nm0cmFS7Bd\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"COD Mangers\",\"col\":3}},{\"id\":\"ejQHx1RH7B\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"COD Management\",\"col\":3}},{\"id\":\"KS0_JIUYbL\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Sales Agents\",\"col\":3}},{\"id\":\"pQp-7t_m6o\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Leads\",\"col\":3}},{\"id\":\"Aj80LpA2Fp\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Sales Order\",\"col\":3}},{\"id\":\"J62tFLRsdh\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Make\",\"col\":3}},{\"id\":\"SO5xgnwPKI\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Model\",\"col\":3}},{\"id\":\"6NNi5328v2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Car Profile\",\"col\":3}}]",
  "creation": "2025-11-08 21:56:56.595244",
  "custom_blocks": [],
  "docstatus": 0,
@@ -13,7 +13,7 @@
  "is_hidden": 0,
  "label": "Policy Pro",
  "links": [],
- "modified": "2025-11-12 02:10:45.153532",
+ "modified": "2025-12-05 22:17:15.086204",
  "modified_by": "Administrator",
  "module": "Policy Pro",
  "name": "Policy Pro",
@@ -39,6 +39,38 @@
    "label": "COD Mangers",
    "link_to": "User",
    "stats_filter": "[[\"User\",\"role_profile_name\",\"=\",\"Lead Manager\",false]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Make",
+   "link_to": "Make",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Model",
+   "link_to": "Model",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Car Profile",
+   "link_to": "Car Profile",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "COD Management",
+   "link_to": "COD Management",
+   "stats_filter": "[]",
    "type": "DocType"
   },
   {

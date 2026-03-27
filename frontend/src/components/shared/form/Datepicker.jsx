@@ -41,6 +41,7 @@ const DatePicker = forwardRef(
       options: userOptions,
       className,
       isCalendar = false,
+      readOnly = false,
       hasCalenderIcon = true,
       ...props
     },
@@ -67,6 +68,7 @@ const DatePicker = forwardRef(
     const options = {
       inline: isCalendar,
       locale: localeData,
+      clickOpens: !readOnly, // Disable opening calendar when readOnly
       ...userOptions,
     };
 
@@ -81,34 +83,64 @@ const DatePicker = forwardRef(
     useImperativeHandle(ref, () => {
       return {
         focus() {
-          fp.current.flatpickr.input.focus();
+          if (fp.current?.flatpickr?.input) {
+            fp.current.flatpickr.input.focus();
+          }
         },
         blur() {
-          fp.current.flatpickr.input.blur();
+          if (fp.current?.flatpickr?.input) {
+            fp.current.flatpickr.input.blur();
+          }
         },
       };
     }, []);
 
     const mergedRef = useMergedRef(fp, ref);
 
+    // Disable/enable flatpickr when readOnly changes
+    useEffect(() => {
+      if (fp.current?.flatpickr) {
+        try {
+          // Use flatpickr's disable/enable methods if available
+          if (readOnly) {
+            // Disable the input
+            if (fp.current.flatpickr.input) {
+              fp.current.flatpickr.input.disabled = true;
+            }
+            // Close calendar if open
+            if (fp.current.flatpickr.isOpen) {
+              fp.current.flatpickr.close();
+            }
+          } else {
+            // Enable the input
+            if (fp.current.flatpickr.input) {
+              fp.current.flatpickr.input.disabled = false;
+            }
+          }
+        } catch (error) {
+          console.warn('Error toggling flatpickr readOnly state:', error);
+        }
+      }
+    }, [readOnly]);
+
     return (
       <Flatpickr
-        className={clsx("cursor-pointer", isCalendar && "hidden", className)}
+        className={clsx(!readOnly && "cursor-pointer", isCalendar && "hidden", className)}
         options={options}
         ref={mergedRef}
         {...props}
         render={({ ...props }, ref) => {
           return isCalendar ? (
-            <input ref={ref} readOnly {...props} />
+            <input ref={ref} {...props} readOnly={readOnly} />
           ) : (
             <Input
               ref={ref}
               prefix={
                 !userOptions?.inline &&
-                hasCalenderIcon && <CalendarIcon className="size-5" />
+                hasCalenderIcon && !readOnly && <CalendarIcon className="size-5" />
               }
-              readOnly
               {...props}
+              readOnly={readOnly}
             />
           );
         }}

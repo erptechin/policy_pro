@@ -4,7 +4,7 @@ import { useInfo, useFeachData } from "hooks/useApiHook";
 
 const pageName = "Sales Order List";
 const doctype = "Sales Order";
-const fields = ['customer', 'custom_agent', 'status', 'per_delivered', 'per_billed', 'delivery_date', 'total'];
+const fields = ['customer', 'custom_agent', 'custom_car_profile', 'status', 'per_delivered', 'per_billed', 'delivery_date', 'total'];
 
 export default function ListData() {
   const [orders, setOrders] = useState([]);

@@ -24,7 +24,7 @@ import { useDeleteData } from "hooks/useApiHook";
 import { useAuthContext } from "app/contexts/auth/context";
 // ----------------------------------------------------------------------
 
-export function RowActions({ row, table }) {
+export function RowActions({ row, table, hideDelete = false, hideEdit = false }) {
   const navigate = useNavigate();
   const doctype = table.options.doctype
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -71,6 +71,16 @@ export function RowActions({ row, table }) {
 
   const state = deleteError ? "error" : deleteSuccess ? "success" : "pending";
 
+  // Check if any menu items should be shown
+  const showEdit = !hideEdit && role?.write == 1;
+  const showDelete = !hideDelete && role?.delete == 1;
+  const hasMenuItems = showEdit || showDelete;
+
+  // If no menu items, don't render anything
+  if (!hasMenuItems) {
+    return null;
+  }
+
   return (
     <>
       <div className="flex justify-center">
@@ -107,7 +117,7 @@ export function RowActions({ row, table }) {
                 </button>
               )}
             </MenuItem> */}
-            {role?.write == 1 && <MenuItem>
+            {showEdit && <MenuItem>
               {({ focus }) => (
                 <button
                   onClick={() => navigate(`edit/${row.original.id}`)}
@@ -122,7 +132,7 @@ export function RowActions({ row, table }) {
                 </button>
               )}
             </MenuItem>}
-            {role?.delete == 1 && <MenuItem>
+            {showDelete && <MenuItem>
               {({ focus }) => (
                 <button
                   onClick={openModal}
@@ -155,4 +165,6 @@ export function RowActions({ row, table }) {
 RowActions.propTypes = {
   row: PropTypes.object,
   table: PropTypes.object,
+  hideDelete: PropTypes.bool,
+  hideEdit: PropTypes.bool,
 };

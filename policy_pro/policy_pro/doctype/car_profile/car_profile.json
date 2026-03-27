@@ -1,0 +1,251 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2025-01-20 10:00:00",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "status",
+  "column_break_ycad",
+  "lead",
+  "customer",
+  "section_break_car_info",
+  "car_make",
+  "car_model",
+  "car_year",
+  "column_break_car_1",
+  "car_brand_new",
+  "car_emirate",
+  "car_registration_date",
+  "section_break_personal_info",
+  "date_of_birth",
+  "renew_date",
+  "column_break_personal_1",
+  "nationality",
+  "license_country",
+  "driving_experience",
+  "section_break_insurance_info",
+  "policy_start_date",
+  "current_policy_active",
+  "column_break_insurance_1",
+  "claims_last_12_months",
+  "no_claims_years",
+  "gcc_specification",
+  "personal_use_only",
+  "policy_fully_comprehensive"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "CAR-PROFILE-.YYYY.-"
+  },
+  {
+   "fieldname": "lead",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Lead",
+   "options": "Lead",
+   "reqd": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Customer",
+   "options": "Customer"
+  },
+  {
+   "default": "New",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "\nNew\nRenew\nCod Pending\nAddon Pending\nActive\nInactive",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_ycad",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_car_info",
+   "fieldtype": "Section Break",
+   "label": "Car Information"
+  },
+  {
+   "fieldname": "car_make",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Make",
+   "options": "Make",
+   "reqd": 1
+  },
+  {
+   "fieldname": "car_model",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Model",
+   "options": "Model",
+   "reqd": 1
+  },
+  {
+   "fieldname": "car_year",
+   "fieldtype": "Select",
+   "label": "Year",
+   "options": "\n2005\n2006\n2007\n2008\n2009\n2010\n2011\n2012\n2013\n2014\n2015\n2016\n2017\n2018\n2019\n2020\n2021\n2022\n2023\n2024\n2025",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_car_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "car_brand_new",
+   "fieldtype": "Select",
+   "label": "Is your car brand new?",
+   "options": "\nYes\nNo",
+   "reqd": 1
+  },
+  {
+   "fieldname": "car_emirate",
+   "fieldtype": "Select",
+   "label": "Which emirate will you register your car?",
+   "options": "\nAbu Dhabi\nAjman\nDubai\nFujairah\nRas Al Khaimah\nSharjah\nUmm Al Quwain",
+   "reqd": 1
+  },
+  {
+   "fieldname": "car_registration_date",
+   "fieldtype": "Date",
+   "label": "Car first registration date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_personal_info",
+   "fieldtype": "Section Break",
+   "label": "Personal Information"
+  },
+  {
+   "fieldname": "date_of_birth",
+   "fieldtype": "Date",
+   "label": "Date of Birth",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_personal_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "nationality",
+   "fieldtype": "Data",
+   "label": "Nationality",
+   "reqd": 1
+  },
+  {
+   "fieldname": "license_country",
+   "fieldtype": "Data",
+   "label": "Which country issued your first driving license?",
+   "reqd": 1
+  },
+  {
+   "fieldname": "driving_experience",
+   "fieldtype": "Select",
+   "label": "How many years of Home country driving experience do you have?",
+   "options": "\n0-6 months\n6 - 12 months\n1 - 2 Years\nMore than 2 Years",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_insurance_info",
+   "fieldtype": "Section Break",
+   "label": "Insurance Information"
+  },
+  {
+   "fieldname": "policy_start_date",
+   "fieldtype": "Date",
+   "label": "When do you want your policy to start?",
+   "reqd": 1
+  },
+  {
+   "fieldname": "current_policy_active",
+   "fieldtype": "Select",
+   "label": "Is your current insurance policy active?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "fieldname": "column_break_insurance_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "claims_last_12_months",
+   "fieldtype": "Select",
+   "label": "Have you made any claims with your insurance provider in the last 12 months?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "fieldname": "no_claims_years",
+   "fieldtype": "Select",
+   "label": "How many years with no claims? (Save up to 20%)",
+   "options": "\nNo - I have no certificate\nYes - 1 year with proof\nYes - 2 years with proof\nYes - 3 or more years with proof"
+  },
+  {
+   "fieldname": "gcc_specification",
+   "fieldtype": "Select",
+   "label": "My car is GCC specification & has not been modified.",
+   "options": "\nYes\nNo"
+  },
+  {
+   "fieldname": "personal_use_only",
+   "fieldtype": "Select",
+   "label": "My car is for personal use only.",
+   "options": "\nYes\nNo"
+  },
+  {
+   "fieldname": "policy_fully_comprehensive",
+   "fieldtype": "Select",
+   "label": "Is the current policy fully comprehensive?",
+   "options": "\nYes\nNo"
+  },
+  {
+   "fieldname": "renew_date",
+   "fieldtype": "Date",
+   "label": "Renew Date"
+  }
+ ],
+ "links": [],
+ "modified": "2026-03-27 12:06:09.898355",
+ "modified_by": "Administrator",
+ "module": "Policy Pro",
+ "name": "Car Profile",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "track_seen": 1,
+ "track_views": 1
+}

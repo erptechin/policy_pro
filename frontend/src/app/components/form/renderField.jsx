@@ -336,6 +336,7 @@ export default function RenderField({ item, control, register, errors, tables, r
                                     const options = item.options ? (item.options).split("\n").map(item => ({ label: item, value: item })) : [];
                                     return <div className="max-w-full">
                                         <SearchSelect
+                                            readOnly={readOnly}
                                             onChange={onChange}
                                             value={value}
                                             label={getLabelNode(item)}
@@ -463,6 +464,7 @@ export default function RenderField({ item, control, register, errors, tables, r
                             <Controller
                                 render={({ field: { onChange, value, ...rest } }) => {
                                     const onChangeDate = (obj) => {
+                             
                                         const date = new Date(obj[0]);
 
                                         let formatted;
@@ -482,6 +484,7 @@ export default function RenderField({ item, control, register, errors, tables, r
                                     }
                                     return <div className="items-center w-full relative">
                                         <DatePicker
+                                            readOnly={readOnly}
                                             onChange={onChangeDate}
                                             value={value || ""}
                                             label={getLabelNode(item)}

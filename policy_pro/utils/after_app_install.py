@@ -133,6 +133,27 @@ def add_role_permissions():
             "delete": 1,
             "share": 1
         })
+        add_doctype_permission("Customer", "Lead Manager", {
+            "read": 1,
+            "write": 1,
+            "create": 1,
+            "delete": 1,
+            "share": 1
+        })
+        add_doctype_permission("User", "Lead Manager", {
+            "read": 1,
+            "write": 1,
+            "create": 1,
+            "delete": 1,
+            "share": 1
+        })
+        add_doctype_permission("Car Profile", "Lead Manager", {
+            "read": 1,
+            "write": 1,
+            "create": 1,
+            "delete": 1,
+            "share": 1
+        })
         print("Role permissions added successfully for Lead Manager")
     else:
         print("Lead Manager role doesn't exist")
@@ -144,6 +165,13 @@ def add_role_permissions():
             "read": 1,
             "write": 1,
             "create": 1,
+            "share": 1
+        })
+        add_doctype_permission("Car Profile", "Lead User", {
+            "read": 1,
+            "write": 1,
+            "create": 1,
+            "delete": 1,
             "share": 1
         })
         print("Role permissions added successfully for Lead User")

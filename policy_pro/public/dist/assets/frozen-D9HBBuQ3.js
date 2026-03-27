@@ -1,0 +1,1 @@
+import{a as l,R as n}from"./index-CA5hYvF4.js";function f({children:e,freeze:t}){let r=c(t,e);return n.createElement(n.Fragment,null,r)}function c(e,t){let[r,a]=l.useState(t);return!e&&r!==t&&a(t),e?r:t}export{f,c as l};

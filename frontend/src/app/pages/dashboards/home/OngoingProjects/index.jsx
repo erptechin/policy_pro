@@ -14,7 +14,7 @@ export function OngoingProjects() {
   const [lists, setLists] = useState([]);
 
   const { data: info } = useInfo({ doctype, fields: JSON.stringify(fields) });
-  const [search, setSearch] = useState({ doctype, page: 1, page_length: 5, fields: null });
+  const [search, setSearch] = useState({ doctype, page: 1, page_length: 5, fields: null, filters: JSON.stringify([["custom_next_follow_up_date", "=", new Date().toISOString().split("T")[0]]]) });
   const { data } = useFeachData(search);
 
   useEffect(() => {
@@ -33,7 +33,7 @@ export function OngoingProjects() {
     <div>
       <div className="flex min-w-0 items-center justify-between">
         <h2 className="truncate text-sm-plus font-medium tracking-wide text-gray-800 dark:text-dark-100">
-          Ongoing Leads
+          {"Today's Follow Ups"}
         </h2>
         <a
           onClick={() => navigate('/sales/leads')}

@@ -22,6 +22,7 @@ const fields = [
   'last_name',
   'email',
   'mobile_no',
+  'custom_sales_target',
 ]
 
 const subFields = [ 'enabled','user_image']

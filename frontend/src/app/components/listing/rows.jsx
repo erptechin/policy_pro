@@ -122,7 +122,7 @@ export function TotalCell({ getValue }) {
         getValue() < 0 && "text-red-800",
       )}
     >
-      ₹{getValue().toLocaleString('en-IN', {
+      AED {getValue().toLocaleString('en-IN', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
       })}

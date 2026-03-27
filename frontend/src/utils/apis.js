@@ -150,6 +150,48 @@ export const getSalesTargetSummary = async () => {
   return response?.data?.data ?? {};
 };
 
+export const createLeadWithCustomer = async (formData, carProfiles, username) => {
+  // Try to get authorization token, but don't fail if it doesn't exist (for guest users)
+  try {
+    await getAuthorizationToken()
+  } catch (error) {
+    // Continue without token for guest users
+  }
+  const response = await axiosInstance.post(`method/policy_pro.api.doctype.create_lead_with_customer`, {
+    form_data: formData,
+    car_profiles: carProfiles,
+    username: username
+  });
+  return response?.data?.data ?? {};
+};
+
+export const createCODManagement = async (codData) => {
+  // Try to get authorization token, but don't fail if it doesn't exist (for guest users)
+  try {
+    await getAuthorizationToken()
+  } catch (error) {
+    // Continue without token for guest users
+  }
+  const response = await axiosInstance.post(`method/policy_pro.api.doctype.create_cod_management`, {
+    cod_data: codData
+  });
+  return response?.data?.data ?? {};
+};
+
+export const updateCODManagement = async (codId, codData) => {
+  // Try to get authorization token, but don't fail if it doesn't exist (for guest users)
+  try {
+    await getAuthorizationToken()
+  } catch (error) {
+    // Continue without token for guest users
+  }
+  const response = await axiosInstance.post(`method/policy_pro.api.doctype.update_cod_management`, {
+    id: codId,
+    cod_data: codData
+  });
+  return response?.data?.data ?? {};
+};
+
 // File Upload
 export const uploadFile = async (file) => {
   const token = window.localStorage.getItem("authToken");

@@ -13,6 +13,8 @@ import { Page } from "components/shared/Page";
 import { Button, Card } from "components/ui";
 import DynamicForms from 'app/components/form/dynamicForms';
 import { useInfo, useAddData, useFeachSingle, useUpdateData } from "hooks/useApiHook";
+import CarProfiles from 'app/components/car-profile/CarProfiles';
+import CODDocuments from './CODDocuments';
 
 const pageName = "Customer List"
 const doctype = "Customer"
@@ -35,7 +37,7 @@ export default function AddEditFrom() {
   const navigate = useNavigate();
   const { id } = useParams();
   const { data: info, isFetching: isFetchingInfo } = useInfo({ doctype, fields: JSON.stringify([...fields, ...subFields]) });
-  const { data, isFetching: isFetchingData } = useFeachSingle({ doctype, id, fields: JSON.stringify([...fields, ...subFields]) });
+  const { data, isFetching: isFetchingData, refetch: refetchData } = useFeachSingle({ doctype, id, fields: JSON.stringify([...fields, ...subFields]) });
 
   const mutationAdd = useAddData((data) => {
     if (data) {
@@ -57,7 +59,7 @@ export default function AddEditFrom() {
     formState: { errors },
     control,
     reset,
-
+    setValue,
   } = useForm({
     resolver: yupResolver(Schema(info?.fields)),
     values: id ? data : initialState,
@@ -114,6 +116,16 @@ export default function AddEditFrom() {
           id="new-post-form"
         >
           <div className="grid grid-cols-12 place-content-start gap-4 sm:gap-5 lg:gap-6">
+            {id && (
+              <CODDocuments
+                id={data?.lead}
+                data={data}
+                setValue={setValue}
+                refetchData={refetchData}
+                filterBy="customer"
+                customerId={id}
+              />
+            )}
             <div className="col-span-12 lg:col-span-8">
               <Card className="p-4 sm:px-5">
                 <div className="mt-5 space-y-5">
@@ -141,6 +153,13 @@ export default function AddEditFrom() {
               </Card>
             </div>
           </div>
+
+          {/* Car Profiles Section */}
+          {id && (
+            <div className="mt-6">
+              <CarProfiles customerId={id} leadId={data?.lead} customerName={data?.customer_name || data?.name} />
+            </div>
+          )}
         </form>
       </div>
     </Page>

@@ -15,7 +15,7 @@ export default function ListData() {
     page: 1,
     page_length: 10,
     fields: null,
-    filters: JSON.stringify([["role_profile_name", "=", "Lead User"]])
+    filters: JSON.stringify([["User Role Profile","role_profile","=","Lead User"]])
   });
   const { data } = useFeachData(search);
 
@@ -25,7 +25,7 @@ export default function ListData() {
       setSearch(prev => ({
         ...prev,
         fields: JSON.stringify([...fieldnames, "name"]),
-        filters: JSON.stringify([["role_profile_name", "=", "Lead User"]])
+        filters: JSON.stringify([["User Role Profile","role_profile","=","Lead User"]])
       }));
     }
   }, [info]);

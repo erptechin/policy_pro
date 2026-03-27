@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { DataTable } from "app/components/listing/DataTable";
 import { useInfo, useFeachData } from "hooks/useApiHook";
+import { useAuthContext } from "app/contexts/auth/context";
 
 const pageName = "Lead List";
 const doctype = "Lead";
@@ -8,6 +9,7 @@ const fields = ['lead_name', 'custom_lead_status', 'custom_next_follow_up_date',
 
 export default function ListData() {
   const [orders, setOrders] = useState([]);
+  const { user } = useAuthContext();
 
   const { data: info } = useInfo({ doctype, fields: JSON.stringify(fields) });
   const [search, setSearch] = useState({ doctype, page: 1, page_length: 10, fields: null });
@@ -16,9 +18,17 @@ export default function ListData() {
   useEffect(() => {
     if (info?.fields) {
       const fieldnames = info?.fields.map(field => field.fieldname);
-      setSearch(prev => ({ ...prev, fields: JSON.stringify([...fieldnames, "name"]) }));
+      setSearch(prev => {
+        const nextSearch = { ...prev, fields: JSON.stringify([...fieldnames, "name"]) };
+        if (user?.role_profile_name !== "Lead Manager") {
+          nextSearch.filters = JSON.stringify([["custom_assigned_user", "=", user.id]]);
+        } else {
+          nextSearch.filters = JSON.stringify([]);
+        }
+        return nextSearch;
+      });
     }
-  }, [info]);
+  }, [info, user]);
 
   useEffect(() => {
     if (data?.data) {

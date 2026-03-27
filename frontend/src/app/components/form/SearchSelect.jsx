@@ -5,7 +5,7 @@ import Select from 'react-select';
 
 // ----------------------------------------------------------------------
 
-const SearchSelect = forwardRef(({ lists, onChange, value, name, error, label, placeholder, readOnly, multiple = false }, ref) => {
+const SearchSelect = forwardRef(({ lists, onChange, value, name, error, label, placeholder, readOnly, multiple = false, req=false }, ref) => {
   const [newValue, setNewValue] = useState(multiple ? (Array.isArray(value) ? value : []) : value);
 
   useEffect(() => {
@@ -86,7 +86,7 @@ const SearchSelect = forwardRef(({ lists, onChange, value, name, error, label, p
       <div>
         <div className="flex items-center">
           {label && <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-            {label}
+            {label} {req && (<span className="text-red-500">*</span>)}
           </label>}
         </div>
 
