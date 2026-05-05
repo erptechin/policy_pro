@@ -136,10 +136,7 @@ def get_sales_report():
         # Get all Lead Users (sales agents)
         agents = frappe.get_all(
             "User",
-            filters={
-                "role_profile_name": ["in", ["Lead User", "Lead Manager"]],
-                "enabled": 1
-            },
+            filters=[["User Role Profile", "role_profile", "in", ["Lead Manager", "Lead User"]], ["User", "enabled", "=", 1]],
             fields=["name", "full_name", "user_image"]
         )
         
@@ -212,19 +209,13 @@ def get_statistics():
         # Count Lead Managers (Users with role_profile_name = "Lead Manager")
         lead_managers_count = frappe.db.count(
             "User",
-            filters={
-                "role_profile_name": "Lead Manager",
-                "enabled": 1
-            }
+            filters=[["User Role Profile", "role_profile", "=", "Lead Manager"], ["User", "enabled", "=", 1]]
         )
         
         # Count Lead Users (Users with role_profile_name = "Lead User")
         lead_users_count = frappe.db.count(
             "User",
-            filters={
-                "role_profile_name": "Lead User",
-                "enabled": 1
-            }
+            filters=[["User Role Profile", "role_profile", "=", "Lead User"], ["User", "enabled", "=", 1]]
         )
         
         # Count all Sales Orders
@@ -279,11 +270,8 @@ def get_sales_target_summary():
         # Get all Lead Users (sales agents)
         agents = frappe.get_all(
             "User",
-            filters={
-                "role_profile_name": ["in", ["Lead User", "Lead Manager"]],
-                "enabled": 1
-            },
-            fields=["name", "full_name"]
+            filters=[["User Role Profile", "role_profile", "in", ["Lead Manager", "Lead User"]], ["User", "enabled", "=", 1]],
+            fields=["name", "full_name", "user_image"]
         )
         
         # Get all sales orders for agents
